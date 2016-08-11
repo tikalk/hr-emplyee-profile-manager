@@ -1,0 +1,45 @@
+import React, {Component} from 'react';
+import GithubLogin from './GithubLogin';
+import GithubClient from '../lib/githubClient';
+
+import fs from 'fs';
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    const token = fs.readFileSync('apiToken.dat', 'utf8');
+
+    if (token) {
+      //try to get list of users from github
+
+    }
+    this.state = {
+      github: {
+        APIKey: token
+      }
+    }
+  }
+
+  setApiToken(apiToken) {
+    const { github } = this.state;
+    github.APIKey = apiToken;
+
+    fs.writeFile('apiToken.dat', github.APIKey);
+    this.setState({github});
+  }
+
+  render() {
+    const { github } = this.state;
+
+    return (
+      <div className="container app">
+        {!github.APIKey &&
+          <GithubLogin setApiToken={this.setApiToken.bind(this)} />
+        }
+        {github.APIKey &&
+          <div>{github.APIKey}</div>
+        }
+      </div>
+    );
+  }
+}
