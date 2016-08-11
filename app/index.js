@@ -7,7 +7,11 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 import './app.global.css';
 
-const store = configureStore();
+import fs from 'fs';
+const state = fs.readFileSync('./state.private', 'utf8');
+console.log(state);
+
+const store = configureStore(JSON.parse(state));
 const history = syncHistoryWithStore(hashHistory, store);
 
 render(

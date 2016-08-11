@@ -1,13 +1,13 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
-import Home from '../components/Home';
-import * as HomepageActions from '../actions/homepage';
+import Login from '../components/Login';
+import * as LoginActions from '../actions/loginpage';
 
-class HomePage extends Component {
+class LoginPage extends Component {
   render() {
     return (
-      <Home />
+      <Login />
     );
   }
 }
@@ -20,6 +20,6 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(HomepageActions, dispatch);
+  return bindActionCreators(LoginActions, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

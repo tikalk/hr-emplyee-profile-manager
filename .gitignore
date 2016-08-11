@@ -34,3 +34,9 @@ dist
 release
 main.js
 main.js.map
+
+
+.idea
+.DS_Store
+
+*.private
