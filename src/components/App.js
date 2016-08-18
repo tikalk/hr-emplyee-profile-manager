@@ -2,8 +2,11 @@ import React, {Component} from 'react';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
+import ExperienceYaml from './ExperienceYaml';
+import Skills from './Skills';
 
 import fs from 'fs';
+
 
 export default class App extends Component {
   constructor(props) {
@@ -42,9 +45,9 @@ export default class App extends Component {
       <div className="container app">
         {!github.APIKey &&
           <GithubLogin setApiToken={this.setApiToken.bind(this)} />
-        }
+        } 
         {github.APIKey &&
-          <YamlEditor filaName="adam"/>
+          <YamlEditor fileName="adam"/>
           
         }
       </div>
