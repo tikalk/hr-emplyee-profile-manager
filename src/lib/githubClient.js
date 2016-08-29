@@ -23,7 +23,6 @@ export default class GithubClient{
       res.setEncoding('utf8');
       const dataBuffer = []
       res.on('data', (chunk) => {
-        // console.log(`BODY: ${chunk}`);
         dataBuffer.push(chunk);
       });
       res.on('end', () => {
@@ -40,23 +39,10 @@ export default class GithubClient{
   }
 
   loadUserYaml(url, callback) {
-    var options = {
-      hostname: 'github.com/',
-      path: `tikalk/tikal_jekyll_website/blob/master/_data/users/Boazf.yml`,
-      method: 'GET',
-      port: 443,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${this.token}`,
-        'User-Agent': 'Node'
-      }
-    };
-
-    var req = https.get(url, (res) => {
+    const req = https.get(url, (res) => {
       res.setEncoding('utf8');
       const dataBuffer = []
       res.on('data', (chunk) => {
-      //  console.log(`BODY: ${chunk}`);
         dataBuffer.push(chunk);
       });
       res.on('end', () => {
@@ -68,7 +54,5 @@ export default class GithubClient{
       callback(e);
     });
 
-    // write data to request body
-    req.end();
   }
 }
