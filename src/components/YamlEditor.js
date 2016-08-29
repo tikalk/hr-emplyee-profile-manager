@@ -5,7 +5,9 @@ import yaml from 'js-yaml';
 import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
+import MetaData from './MetaData';
 import autoBind from 'react-autobind';
+import classNames from 'classnames';
 
 const history = [];
 
@@ -37,6 +39,14 @@ export default class YamlEditor extends Component {
     this.save();
   }
 
+  onSaveMetaData(metadata) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    _.merge(yamlData, metadata);
+    this.setState({ yamlData });
+    this.save();
+  }
+
   undo() {
     const data = history.pop();
     if (data) {
@@ -44,34 +54,39 @@ export default class YamlEditor extends Component {
     }
   }
 
+  toggelEx() {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.ex = !yamlData.ex;
+    this.setState({ yamlData });
+  }
+
   save() {
     const { yamlData } = this.state;
+    const yamlText = yaml.safeDump(yamlData);
+    console.log(yamlText);
+
   }
 
   render() {
     const { yamlData } = this.state;
+    const { id, about, login, follow_me_urls, ex } = yamlData;
 
-    const followMe = yamlData.follow_me_urls.map((url) => {
-      return (
-        <div key={url}>
-          {url}
-        </div>
-      );
-    });
     const experiences = yamlData.experience.map((exp, i) => {
       return (
         <ExperienceYaml onSave={this.onSaveExperience.bind(this, i)} key={i} {...exp}/>
       );
-
     });
 
+    const exBtnClasses = classNames('btn', {'btn-primary': !ex, 'btn-default': ex});
+    const active = ex ? 'Ex-Employee' : 'Active';
     return (
-      <div className="profile content">
+      <div className="profile container">
         <div>
           <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png"/>
         </div>
         <div className="pull-right">
-          <button className="btn">Publish</button>
+          <button className="btn" onClick={this.save}>Publish</button>
           &nbsp;
           <button className="btn" onClick={this.undo}>Undo</button>
         </div>
@@ -80,24 +95,10 @@ export default class YamlEditor extends Component {
             {yamlData.first_name} {yamlData.last_name}
           </h1>
           <h2 className="descName">{yamlData.description}</h2>
-          <div className="container">
-            <div className="row">
-              <div className="col-md-2">ID:</div>
-              <div className="col-md-10">{yamlData.id}</div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">About:</div>
-              <div className="col-md-10">{yamlData.about}</div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">Login:</div>
-              <div className="col-md-10">{yamlData.login}</div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">Follow Me:</div>
-              <div className="col-md-10">{followMe}</div>
-            </div>
+          <div>
+            <button onClick={this.toggelEx} className={exBtnClasses}>{active}</button>
           </div>
+          <MetaData saveMetaData={this.onSaveMetaData} id={id} about={about} login={login} follow_me_urls={follow_me_urls} />
           <h2>Experience</h2>
           <div className="container">
             {experiences}
