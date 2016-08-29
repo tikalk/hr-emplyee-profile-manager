@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import GithubLogin from './GithubLogin';
+import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
+import ExperienceYaml from './ExperienceYaml';
+import Skills from './Skills';
 
 import fs from 'fs';
+
 
 export default class App extends Component {
   constructor(props) {
     super(props);
-    const token = fs.readFileSync('apiToken.dat', 'utf8');
+    let token;
+    try{
+      token = fs.readFileSync('apiToken.dat', 'utf8');
+    }
+    catch (ex){
+
+    }
 
     if (token) {
       //try to get list of users from github
@@ -35,9 +45,10 @@ export default class App extends Component {
       <div className="container app">
         {!github.APIKey &&
           <GithubLogin setApiToken={this.setApiToken.bind(this)} />
-        }
+        } 
         {github.APIKey &&
-          <div>{github.APIKey}</div>
+          <YamlEditor fileName="adam"/>
+          
         }
       </div>
     );
