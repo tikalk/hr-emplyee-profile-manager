@@ -45,10 +45,10 @@ export default class App extends Component {
       <div className="container app">
         {!github.APIKey &&
           <GithubLogin setApiToken={this.setApiToken.bind(this)} />
-        } 
+        }
         {github.APIKey &&
           <YamlEditor fileName="adam"/>
-          
+
         }
       </div>
     );
