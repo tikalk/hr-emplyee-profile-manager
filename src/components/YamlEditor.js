@@ -6,6 +6,7 @@ import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
+import ProfilesList from './ProfilesList';
 import autoBind from 'react-autobind';
 import classNames from 'classnames';
 
@@ -15,12 +16,19 @@ export default class YamlEditor extends Component {
 
   constructor(props) {
     super(props);
-    const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName + '.yaml', 'utf8'));
-    console.log(yamlData);
+    const { yamlData } = props;
+    //const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName + '.yaml', 'utf8'));
     autoBind(this);
     this.state = {
-      yamlData: yamlData
+      yamlData
     }
+  }
+
+  componentWillReceiveProps(props) {
+    const { yamlData } = props;
+    this.setState({
+      yamlData
+    });
   }
 
   onSaveExperience(id, data) {
@@ -70,13 +78,8 @@ export default class YamlEditor extends Component {
 
   render() {
     const { yamlData } = this.state;
-    const { id, about, login, follow_me_urls, ex } = yamlData;
-
-    const experiences = yamlData.experience.map((exp, i) => {
-      return (
-        <ExperienceYaml onSave={this.onSaveExperience.bind(this, i)} key={i} {...exp}/>
-      );
-    });
+    const { users, loadUser } = this.props;
+    const { id, about, login, follow_me_urls, ex } = yamlData || {};
 
     const exBtnClasses = classNames('btn', {'btn-primary': !ex, 'btn-default': ex});
     const active = ex ? 'Ex-Employee' : 'Active';
@@ -85,11 +88,12 @@ export default class YamlEditor extends Component {
         <div>
           <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png"/>
         </div>
-        <div className="pull-right">
+        <div className="main-buttons pull-right">
+          <ProfilesList users={users} loadUser={loadUser}/>
           <button className="btn" onClick={this.save}>Publish</button>
-          &nbsp;
           <button className="btn" onClick={this.undo}>Undo</button>
         </div>
+        {yamlData &&
         <div>
           <h1 className="titleName">
             {yamlData.first_name} {yamlData.last_name}
@@ -101,14 +105,25 @@ export default class YamlEditor extends Component {
           <MetaData saveMetaData={this.onSaveMetaData} id={id} about={about} login={login} follow_me_urls={follow_me_urls} />
           <h2>Experience</h2>
           <div className="container">
-            {experiences}
+            {yamlData.experience && yamlData.experience.map((exp, i) => {
+              return (
+                <ExperienceYaml onSave={this.onSaveExperience.bind(this, i)} key={i} {...exp}/>
+              );
+            })
+            }
           </div>
           <h2>Skills</h2>
-          <h3>Developer Skills</h3>
-          <Skills saveSkills={this.onSaveSkills.bind(this, 'developer_skills')} skills={yamlData.skills.developer_skills} />
-          <h3>Expert skills</h3>
-          <Skills saveSkills={this.onSaveSkills.bind(this, 'expert_skills')} skills={yamlData.skills.expert_skills} />
+          {yamlData.skills &&
+            <div>
+              <h3>Developer Skills</h3>
+              <Skills saveSkills={this.onSaveSkills.bind(this, 'developer_skills')} skills={yamlData.skills.developer_skills} />
+              <h3>Expert skills</h3>
+              <Skills saveSkills={this.onSaveSkills.bind(this, 'expert_skills')} skills={yamlData.skills.expert_skills} />
+            </div>
+          }
+
         </div>
+        }
       </div>
     );
   }

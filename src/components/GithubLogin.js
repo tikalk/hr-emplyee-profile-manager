@@ -6,7 +6,7 @@ export default class GithubLogin extends React.Component{
   };
 
   updateApiToken() {
-    this.props.setApiToken(this.refs.apiTokenInput.value);
+    this.props.setApiToken(new Buffer(`${this.refs.username.value}:${this.refs.apiTokenInput.value}`).toString('base64'));
   }
 
   render() {
@@ -17,6 +17,9 @@ export default class GithubLogin extends React.Component{
         <div className="form-inline">
           <div className="form-group">
             <input id="apiTokenInput" ref="apiTokenInput" className="form-control" placeholder="Github API Token"/>
+          </div>
+          <div className="form-group">
+            <input id="username" ref="username" className="form-control" placeholder="Git UserName"/>
           </div>
           <div className="btn btn-default" onClick={this.updateApiToken.bind(this)}>Save</div>
           <div>

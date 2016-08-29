@@ -55,3 +55,7 @@
 .description-textarea {
 	min-height: 80px;
 }
+
+.main-buttons button {
+	margin-left: 15px;
+}

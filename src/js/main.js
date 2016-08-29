@@ -1,3 +1,6 @@
+global.jQuery = require('jquery');
+require('bootstrap');
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
