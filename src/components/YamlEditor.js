@@ -1,93 +1,129 @@
 import React, {Component} from 'react';
 
-
 import fs from 'fs';
 import yaml from 'js-yaml';
 import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
+import MetaData from './MetaData';
+import ProfilesList from './ProfilesList';
+import autoBind from 'react-autobind';
+import classNames from 'classnames';
 
+const history = [];
 
 export default class YamlEditor extends Component {
+
   constructor(props) {
     super(props);
-    const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName +  '.yaml', 'utf8'));
-    console.log(yamlData);
-
-     this.state = {
-      yamlData: yamlData
+    const { yamlData } = props;
+    //const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName + '.yaml', 'utf8'));
+    autoBind(this);
+    this.state = {
+      yamlData
     }
   }
 
+  componentWillReceiveProps(props) {
+    const { yamlData } = props;
+    this.setState({
+      yamlData
+    });
+  }
+
+  onSaveExperience(id, data) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.experience[id] = data;
+    this.setState({ yamlData });
+    this.save();
+  }
+
+  onSaveSkills(type, skills) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.skills[type] = skills;
+    this.setState({ yamlData });
+    this.save();
+  }
+
+  onSaveMetaData(metadata) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    _.merge(yamlData, metadata);
+    this.setState({ yamlData });
+    this.save();
+  }
+
+  undo() {
+    const data = history.pop();
+    if (data) {
+      this.setState({ yamlData: data });
+    }
+  }
+
+  toggelEx() {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.ex = !yamlData.ex;
+    this.setState({ yamlData });
+  }
+
+  save() {
+    const { yamlData } = this.state;
+    const yamlText = yaml.safeDump(yamlData);
+    console.log(yamlText);
+
+  }
 
   render() {
-    const followMe = this.state.yamlData.follow_me_urls.map((url) =>{
-      return (
-        <div key={url}>
-          {url}
-        </div>
-      );
-    });
+    const { yamlData } = this.state;
+    const { users, loadUser } = this.props;
+    const { id, about, login, follow_me_urls, ex } = yamlData || {};
 
-
-
-    const experiences = this.state.yamlData.experience.map((exp) =>{
-      return(
-          <ExperienceYaml {...exp}/> 
-      );
-
-    });
-    const devSkills = _.reduce(this.state.yamlData.skills.developer_skills, function(result, value, key){
-        const skillObj = {skill: key, value: value};
-        result.push(<Skills {...skillObj}/>);
-        return result;
-         
-    },[]);
-
-    const expertSkills = _.reduce(this.state.yamlData.skills.expert_skills, function(result, value, key){
-        const skillObj = {skill: key, value: value};
-        result.push(<Skills {...skillObj}/>);
-        return result;c
-         
-    },[]);
-
-
+    const exBtnClasses = classNames('btn', {'btn-primary': !ex, 'btn-default': ex});
+    const active = ex ? 'Ex-Employee' : 'Active';
     return (
-      <div className="profile">
-        <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png"/>
-        <div className="titleName">{this.state.yamlData.first_name} {this.state.yamlData.last_name}</div>
-        <div className="descName">{this.state.yamlData.description}</div>
-        <div className="profileRow">
-          <span className="title">ID: </span>
-          <span className="desc">{this.state.yamlData.id}</span>
+      <div className="profile container">
+        <div>
+          <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png"/>
         </div>
-        <div className="profileRow">
-          <span className="title">About:</span>
-          <span className="desc">{this.state.yamlData.about}</span>
+        <div className="main-buttons pull-right">
+          <ProfilesList users={users} loadUser={loadUser}/>
+          <button className="btn" onClick={this.save}>Publish</button>
+          <button className="btn" onClick={this.undo}>Undo</button>
         </div>
-        <div className="profileRow">
-          <span className="title">Login:</span>
-          <span className="desc">{this.state.yamlData.login}</span>
-        </div>
-        <div className="profileRow">
-          <span className="title">Follow Me:</span>
-          <span className="desc">{followMe}</span>
-        </div>
-        <div className="profileRow">
-          <span className="title">Experience:</span>
-          <div>{experiences}</div>
-        </div> 
+        {yamlData &&
+        <div>
+          <h1 className="titleName">
+            {yamlData.first_name} {yamlData.last_name}
+          </h1>
+          <h2 className="descName">{yamlData.description}</h2>
+          <div>
+            <button onClick={this.toggelEx} className={exBtnClasses}>{active}</button>
+          </div>
+          <MetaData saveMetaData={this.onSaveMetaData} id={id} about={about} login={login} follow_me_urls={follow_me_urls} />
+          <h2>Experience</h2>
+          <div className="container">
+            {yamlData.experience && yamlData.experience.map((exp, i) => {
+              return (
+                <ExperienceYaml onSave={this.onSaveExperience.bind(this, i)} key={i} {...exp}/>
+              );
+            })
+            }
+          </div>
+          <h2>Skills</h2>
+          {yamlData.skills &&
+            <div>
+              <h3>Developer Skills</h3>
+              <Skills saveSkills={this.onSaveSkills.bind(this, 'developer_skills')} skills={yamlData.skills.developer_skills} />
+              <h3>Expert skills</h3>
+              <Skills saveSkills={this.onSaveSkills.bind(this, 'expert_skills')} skills={yamlData.skills.expert_skills} />
+            </div>
+          }
 
-         <div className="profileRow">
-          <span className="title">skills:</span>
-          <br/>
-          <span className="title innerProp">developer skills:</span>
-          <div>{devSkills}</div>
-          
-          <span className="title innerProp">expert skills:</span>
-          <div>{expertSkills}</div>
-          
-        </div>          
+        </div>
+        }
       </div>
     );
   }

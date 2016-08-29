@@ -1,48 +1,61 @@
-.tikal-logo{
-	float: right;
-	
+/*.tikal-logo{*/
+	/*float: right;*/
+
+/*}*/
+
+/*.profile{*/
+	/*margin: 30px 20px;*/
+/*}*/
+
+/*.profile .titleName{*/
+	/*font-size: 40px;*/
+/*}*/
+
+/*.profile .descName{*/
+	/*font-size: 24px;*/
+	/*color: gray;*/
+/*}*/
+
+
+/*.profile .profileRow{*/
+	/*margin: 17px 5px;*/
+	/*width:100%;*/
+	/*display: inline-block;*/
+/*}*/
+
+/*.profile .innerRow{*/
+	/*margin: 10px 5px;*/
+	/*width:100%;*/
+	/*display: inline-block;*/
+/*}*/
+
+/*.profile .profileRow .name{*/
+	/*float: left;*/
+	/*width: 20%;*/
+/*}*/
+
+
+/*.profile .profileRow .desc{*/
+	/*float: right;*/
+	/*width: 80%;*/
+	/*word-wrap:break-word;*/
+/*}*/
+
+/*.profile .profileRow .innerProp{*/
+	/*margin-left: 40px;*/
+/*}*/
+.row {
+	line-height: 2.4em;
 }
 
-.profile{
-	margin: 30px 20px;
+.input-group-addon i {
+	cursor: pointer;
 }
 
-.profile .titleName{
-	font-size: 40px;
+.description-textarea {
+	min-height: 80px;
 }
 
-.profile .descName{
-	font-size: 24px;
-	color: gray;
+.main-buttons button {
+	margin-left: 15px;
 }
-
-
-.profile .profileRow{
-	margin: 17px 5px;
-	width:100%;
-	display: inline-block;
-} 
-
-.profile .innerRow{
-	margin: 10px 5px;
-	width:100%;
-	display: inline-block;
-}
-
-.profile .profileRow .name{
-	float: left;
-	width: 20%;
-}
-
-
-.profile .profileRow .desc{
-	float: right;
-	width: 80%;
-	word-wrap:break-word;
-}
-
-.profile .profileRow .innerProp{
-	margin-left: 40px;
-}
-
-

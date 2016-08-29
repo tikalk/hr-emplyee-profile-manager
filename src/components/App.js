@@ -2,11 +2,11 @@ import React, {Component} from 'react';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
-import ExperienceYaml from './ExperienceYaml';
-import Skills from './Skills';
-
+import autoBind from 'react-autobind';
 import fs from 'fs';
+import yaml from 'js-yaml';
 
+let githubClient;
 
 export default class App extends Component {
   constructor(props) {
@@ -19,17 +19,31 @@ export default class App extends Component {
 
     }
 
-    if (token) {
-      //try to get list of users from github
-
-    }
     this.state = {
       github: {
         APIKey: token
       }
+    };
+    autoBind(this);
+  }
+
+  componentDidMount() {
+    const { github } = this.state;
+    const that = this;
+    if (github.APIKey) {
+      githubClient = new GithubClient(github.APIKey);
+      githubClient.loadUsers((err, users) => {
+        that.setState({ users });
+      });
     }
   }
 
+  loadUser(url) {
+    githubClient.loadUserYaml(url, (err, userYaml) => {
+
+      this.setState({ userYaml: yaml.safeLoad(userYaml) });
+    });
+  }
   setApiToken(apiToken) {
     const { github } = this.state;
     github.APIKey = apiToken;
@@ -39,16 +53,15 @@ export default class App extends Component {
   }
 
   render() {
-    const { github } = this.state;
+    const { github, users, userYaml } = this.state;
 
     return (
       <div className="container app">
         {!github.APIKey &&
           <GithubLogin setApiToken={this.setApiToken.bind(this)} />
-        } 
+        }
         {github.APIKey &&
-          <YamlEditor fileName="adam"/>
-          
+          <YamlEditor users={users} yamlData={userYaml} loadUser={this.loadUser}/>
         }
       </div>
     );

@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  // devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   entry: {
     app: ['webpack/hot/dev-server', './src/js/main.js'],
   },
@@ -30,7 +31,6 @@ module.exports = {
       { test: /\.json$/,
         loader: 'json-loader'
       }
-
     ]
   },
   plugins: [

@@ -44,12 +44,12 @@ experience:
 - title: Python & JS Developer @ Healarium
   years: '2013'
   description:
-    "- Worked with all aspects of the code base, both server-side (Django and Python) and client-side (JavaScript and CSS3/HTML5).
-    - Main developer in a complete redesign from scratch of the of the web interface, using modern coding practices, CSS3, and ensuring cross-browser compatibility.
-      The project introduced modern web design tools and frameworks (SASS/Compass and Foundation).
-    - Responsible for a significant clean-up of legacy JavaScript code, enabling use of modern techniques for loading JavaScript and dealing with dependencies.
-    - Responsible for creating a completely new administration page in the client's web application to handle a large feature addition,
-      involving both server-side development of an API and a complete implementation of the client side of the page.
-      The result was a new general framework for creating administration pages in the client's web application using Backbone.js for the client-side framework,
-      which is expected to dramatically decrease the amount of time necessary for creating similar pages in the future, and to increase the consistency and maintainability of this and similar pages.
+    "- Worked with all aspects of the code base, both server-side (Django and Python) and client-side (JavaScript and CSS3/HTML5).\n
+    - Main developer in a complete redesign from scratch of the of the web interface, using modern coding practices, CSS3, and ensuring cross-browser compatibility.\n
+      The project introduced modern web design tools and frameworks (SASS/Compass and Foundation).\n
+    - Responsible for a significant clean-up of legacy JavaScript code, enabling use of modern techniques for loading JavaScript and dealing with dependencies.\n
+    - Responsible for creating a completely new administration page in the client's web application to handle a large feature addition,\n
+      involving both server-side development of an API and a complete implementation of the client side of the page.\n
+      The result was a new general framework for creating administration pages in the client's web application using Backbone.js for the client-side framework,\n
+      which is expected to dramatically decrease the amount of time necessary for creating similar pages in the future, and to increase the consistency and maintainability of this and similar pages.\n
     - Instrumental in delivering a new major version of the client's software to a major client, which fulfilled the contractual obligation regarding features, and was delivered on time and with good quality (low bug count)."
