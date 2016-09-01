@@ -9,13 +9,13 @@ This is basically a YAML editor that is capable of editing and commiting YAML fi
 First, clone the repo via git:
 
 ```bash
-git clone https://github.com/chentsulin/electron-react-boilerplate.git your-project-name
+git clone https://github.com/tikalk/hr-emplyee-profile-manager
 ```
 
 And then install dependencies.
 
 ```bash
-$ cd your-project-name && npm install
+$ cd hr-emplyee-profile-manager && npm install
 ```
 
 
