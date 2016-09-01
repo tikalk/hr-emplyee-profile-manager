@@ -27,3 +27,6 @@ Run this two commands __simultaneously__ in different console tabs.
 $ npm run watch
 $ npm run start
 ```
+
+## Warning
+Be sure not to commit any credential elements into the sourcebase - the github token is stored on a local file which should not be pushed to the repository under any circumstance!!!
