@@ -36,7 +36,7 @@ export default class YamlEditor extends Component {
     history.push(_.cloneDeep(yamlData));
     yamlData.experience[id] = data;
     this.setState({ yamlData });
-    this.save();
+    //this.save();
   }
 
   onSaveSkills(type, skills) {
@@ -44,7 +44,7 @@ export default class YamlEditor extends Component {
     history.push(_.cloneDeep(yamlData));
     yamlData.skills[type] = skills;
     this.setState({ yamlData });
-    this.save();
+    //this.save();
   }
 
   onSaveMetaData(metadata) {
@@ -52,7 +52,7 @@ export default class YamlEditor extends Component {
     history.push(_.cloneDeep(yamlData));
     _.merge(yamlData, metadata);
     this.setState({ yamlData });
-    this.save();
+    //this.save();
   }
 
   undo() {
@@ -70,9 +70,13 @@ export default class YamlEditor extends Component {
   }
 
   save() {
+    const { user, saveUser} = this.props;
     const { yamlData } = this.state;
     const yamlText = yaml.safeDump(yamlData);
     console.log(yamlText);
+
+    if(!user) return;
+      saveUser(user, yamlText);
 
   }
 
