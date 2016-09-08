@@ -29,17 +29,20 @@ export default class App extends Component {
 
   componentDidMount() {
     const {github} = this.state;
-    const that = this;
     if (github.APIKey) {
       githubClient = new GithubClient(github.APIKey);
-      githubClient.loadUsers((err, users) => {
-        that.setState({users});
-      });
+      this.loadUsers();
     }
   }
 
+  loadUsers() {
+    githubClient.loadUsers().then((users) => {
+      this.setState({users});
+    });
+  }
+
   loadUser(url) {
-    githubClient.loadUserYaml(url, (err, userYaml) => {
+    githubClient.loadUserYaml(url).then((userYaml) => {
       let user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
       console.log('user', user);
       this.setState({userYaml: yaml.safeLoad(userYaml), user: user});
@@ -49,6 +52,8 @@ export default class App extends Component {
   saveUser(name, yaml) {
     githubClient.saveUserYaml(name, yaml).then(() => {
       console.log("user " + name + ' saved');
+      // reload users to update links after commit
+      this.loadUsers();
     });
   }
 

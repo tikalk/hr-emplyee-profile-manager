@@ -13,73 +13,69 @@ export default class GithubClient {
 
   request(options) {
     return new Promise((resolve, reject)=> {
-      var req = https.request(options, (res) => {
+      const req = https.request(options, (res) => {
         res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
         });
         res.on('end', () => {
+          if (res.statusCode < 200 || res.statusCode > 299) {
+            console.log('XHR failed:', res.statusMessage);
+            reject(res.statusMessage);
+            return;
+          }
           resolve(JSON.parse(dataBuffer.join('')));
         });
       });
       req.on('error', (e) => {
-        console.log(`problem with request: ${e.message}`);
-        reject(e);
+        console.log('XHR failed:', e.message);
+        reject(e.message);
       });
       // write data to request body
       req.end(options.body);
     });
   }
 
-  loadUsers(callback) {
-    var options = {
-      hostname: 'api.github.com',
-      path: '/repos/tikalk/tikal_jekyll_website/contents/_data/users',
+  loadUsers() {
+    const {basePath, userPath, branch, token, hostName} = this;
+    const options = {
+      hostname: hostName,
+      path: `${basePath}/contents/${userPath}?ref=${branch}`,
       method: 'GET',
       port: 443,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${this.token}`,
+        'Authorization': `Basic ${token}`,
         'User-Agent': 'Node'
       }
     };
 
-    var req = https.request(options, (res) => {
-      res.setEncoding('utf8');
-      const dataBuffer = [];
-      res.on('data', (chunk) => {
-        dataBuffer.push(chunk);
-      });
-      res.on('end', () => {
-        callback(null, JSON.parse(dataBuffer.join('')));
-      });
-    });
-    req.on('error', (e) => {
-      console.log(`problem with request: ${e.message}`);
-      callback(e);
-    });
-
-    // write data to request body
-    req.end();
+    return this.request(options);
   }
 
-  loadUserYaml(url, callback) {
-    const req = https.get(url, (res) => {
-      res.setEncoding('utf8');
-      const dataBuffer = [];
-      res.on('data', (chunk) => {
-        dataBuffer.push(chunk);
+  loadUserYaml(url) {
+    return new Promise((resolve, reject)=> {
+      const req = https.get(url, (res) => {
+        res.setEncoding('utf8');
+        const dataBuffer = [];
+        res.on('data', (chunk) => {
+          dataBuffer.push(chunk);
+        });
+        res.on('end', () => {
+          if (res.statusCode < 200 || res.statusCode > 299) {
+            console.log('XHR failed:', res.statusMessage);
+            reject(res.statusMessage);
+            return;
+          }
+          resolve(dataBuffer.join(''));
+        });
       });
-      res.on('end', () => {
-        callback(null, dataBuffer.join(''));
+      req.on('error', (e) => {
+        console.log('XHR failed:', e.message);
+        reject(e.message);
       });
     });
-    req.on('error', (e) => {
-      console.log(`problem with request: ${e.message}`);
-      callback(e);
-    });
-
   }
 
   saveUserYaml(userName, yaml, message) {
@@ -87,19 +83,19 @@ export default class GithubClient {
   }
 
   saveBlob(fullFileName, blob, message) {
-    var basePath = this.basePath;
-    var branch = this.branch;
-    var options = {
-      hostname: this.hostName,
+    const {basePath, branch, token, hostName} = this;
+    const options = {
+      hostname: hostName,
       port: 443,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${this.token}`,
+        'Authorization': `Basic ${token}`,
         'User-Agent': 'Node'
       }
     };
 
-    var SHA_LATEST_COMMIT, SHA_BASE_TREE, SHA_NEW_TREE, SHA_NEW_COMMIT;
+    let SHA_LATEST_COMMIT, SHA_BASE_TREE, SHA_NEW_TREE, SHA_NEW_COMMIT;
+
     options.path = `${basePath}/git/refs/heads/${branch}`;
     options.method = 'GET';
     return this.request(options)
