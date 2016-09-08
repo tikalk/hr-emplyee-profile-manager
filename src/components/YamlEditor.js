@@ -35,30 +35,27 @@ export default class YamlEditor extends Component {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
     yamlData.experience[id] = data;
-    this.setState({ yamlData });
-    this.save();
+    this.setState({yamlData});
   }
 
   onSaveSkills(type, skills) {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
     yamlData.skills[type] = skills;
-    this.setState({ yamlData });
-    this.save();
+    this.setState({yamlData});
   }
 
   onSaveMetaData(metadata) {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
     _.merge(yamlData, metadata);
-    this.setState({ yamlData });
-    this.save();
+    this.setState({yamlData});
   }
 
   undo() {
     const data = history.pop();
     if (data) {
-      this.setState({ yamlData: data });
+      this.setState({yamlData: data});
     }
   }
 
@@ -66,13 +63,17 @@ export default class YamlEditor extends Component {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
     yamlData.ex = !yamlData.ex;
-    this.setState({ yamlData });
+    this.setState({yamlData});
   }
 
   save() {
+    const { user, saveUser} = this.props;
     const { yamlData } = this.state;
     const yamlText = yaml.safeDump(yamlData);
     console.log(yamlText);
+
+    if (!user) return;
+    saveUser(user, yamlText);
 
   }
 
@@ -102,7 +103,8 @@ export default class YamlEditor extends Component {
           <div>
             <button onClick={this.toggelEx} className={exBtnClasses}>{active}</button>
           </div>
-          <MetaData saveMetaData={this.onSaveMetaData} id={id} about={about} login={login} follow_me_urls={follow_me_urls} />
+          <MetaData saveMetaData={this.onSaveMetaData} id={id} about={about} login={login}
+                    follow_me_urls={follow_me_urls}/>
           <h2>Experience</h2>
           <div className="container">
             {yamlData.experience && yamlData.experience.map((exp, i) => {
@@ -114,12 +116,14 @@ export default class YamlEditor extends Component {
           </div>
           <h2>Skills</h2>
           {yamlData.skills &&
-            <div>
-              <h3>Developer Skills</h3>
-              <Skills saveSkills={this.onSaveSkills.bind(this, 'developer_skills')} skills={yamlData.skills.developer_skills} />
-              <h3>Expert skills</h3>
-              <Skills saveSkills={this.onSaveSkills.bind(this, 'expert_skills')} skills={yamlData.skills.expert_skills} />
-            </div>
+          <div>
+            <h3>Developer Skills</h3>
+            <Skills saveSkills={this.onSaveSkills.bind(this, 'developer_skills')}
+                    skills={yamlData.skills.developer_skills}/>
+            <h3>Expert skills</h3>
+            <Skills saveSkills={this.onSaveSkills.bind(this, 'expert_skills')}
+                    skills={yamlData.skills.expert_skills}/>
+          </div>
           }
 
         </div>

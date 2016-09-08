@@ -12,10 +12,10 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     let token;
-    try{
+    try {
       token = fs.readFileSync('apiToken.dat', 'utf8');
     }
-    catch (ex){
+    catch (ex) {
 
     }
 
@@ -28,24 +28,37 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    const { github } = this.state;
-    const that = this;
+    const {github} = this.state;
     if (github.APIKey) {
       githubClient = new GithubClient(github.APIKey);
-      githubClient.loadUsers((err, users) => {
-        that.setState({ users });
-      });
+      this.loadUsers();
     }
   }
 
-  loadUser(url) {
-    githubClient.loadUserYaml(url, (err, userYaml) => {
-
-      this.setState({ userYaml: yaml.safeLoad(userYaml) });
+  loadUsers() {
+    githubClient.loadUsers().then((users) => {
+      this.setState({users});
     });
   }
+
+  loadUser(url) {
+    githubClient.loadUserYaml(url).then((userYaml) => {
+      let user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
+      console.log('user', user);
+      this.setState({userYaml: yaml.safeLoad(userYaml), user: user});
+    });
+  }
+
+  saveUser(name, yaml) {
+    githubClient.saveUserYaml(name, yaml).then(() => {
+      console.log("user " + name + ' saved');
+      // reload users to update links after commit
+      this.loadUsers();
+    });
+  }
+
   setApiToken(apiToken) {
-    const { github } = this.state;
+    const {github} = this.state;
     github.APIKey = apiToken;
 
     fs.writeFile('apiToken.dat', github.APIKey);
@@ -53,15 +66,16 @@ export default class App extends Component {
   }
 
   render() {
-    const { github, users, userYaml } = this.state;
+    const {github, users, userYaml, user} = this.state;
 
     return (
       <div className="container app">
         {!github.APIKey &&
-          <GithubLogin setApiToken={this.setApiToken.bind(this)} />
+        <GithubLogin setApiToken={this.setApiToken.bind(this)}/>
         }
         {github.APIKey &&
-          <YamlEditor users={users} yamlData={userYaml} loadUser={this.loadUser}/>
+        <YamlEditor users={users} user={user} yamlData={userYaml} loadUser={this.loadUser}
+                    saveUser={this.saveUser}/>
         }
       </div>
     );
