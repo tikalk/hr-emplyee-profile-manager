@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import fs from 'fs';
+//import fs from 'fs';
 import yaml from 'js-yaml';
 import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';

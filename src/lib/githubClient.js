@@ -1,5 +1,6 @@
-import {client} from 'github';
+// import {client} from 'github';
 import https from 'https';
+import urlTools from 'url';
 
 export default class GithubClient {
   constructor(token) {
@@ -12,9 +13,10 @@ export default class GithubClient {
   }
 
   request(options) {
+    options.withCredentials = false;
     return new Promise((resolve, reject)=> {
       const req = https.request(options, (res) => {
-        res.setEncoding('utf8');
+//        res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
@@ -32,6 +34,7 @@ export default class GithubClient {
         console.log('XHR failed:', e.message);
         reject(e.message);
       });
+      // if(options.withCredentials !== undefined) req.xhr.withCredentials = options.withCredentials;
       // write data to request body
       req.end(options.body);
     });
@@ -47,7 +50,7 @@ export default class GithubClient {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${token}`,
-        'User-Agent': 'Node'
+        // 'User-Agent': 'Node'
       }
     };
 
@@ -56,8 +59,10 @@ export default class GithubClient {
 
   loadUserYaml(url) {
     return new Promise((resolve, reject)=> {
-      const req = https.get(url, (res) => {
-        res.setEncoding('utf8');
+      const options = urlTools.parse(url);
+      options.withCredentials = false;
+      const req = https.get(options, (res) => {
+//        res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
