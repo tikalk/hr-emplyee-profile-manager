@@ -23,7 +23,8 @@ export default class Skills extends Component{
     if (editing) {
       this.props.saveSkills(skills)
     }
-    this.setState({ editing: !this.state.editing})
+    this.props.editingChanged(!this.state.editing);
+    this.setState({ editing: !this.state.editing});
   }
 
   updateSkill(key, evt) {

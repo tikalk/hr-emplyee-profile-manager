@@ -16,7 +16,7 @@ export default class ProfilesList extends Component {
     return (
       <div className="btn-group">
         <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Choose user <span className="caret"></span>
+          Choose Profile <span className="caret"></span>
         </button>
         <ul className="dropdown-menu">
           {(users || []).map((user, i) => {

@@ -83,6 +83,13 @@ export default class GithubClient {
     });
   }
 
+  loadTemplate(){
+    return this.loadUsers().then((users)=>{
+      const {download_url} = _.find(users, {name:'template.txt'});
+      return this.loadUserYaml(download_url);
+    });
+  }
+
   saveUserYaml(userName, yaml, message) {
     return this.saveBlob(`${this.userPath}/${userName}.yml`, yaml, message || `saving ${userName} profile`);
   }

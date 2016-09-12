@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import _ from 'lodash';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
@@ -38,15 +39,24 @@ export default class App extends Component {
 
   loadUsers() {
     githubClient.loadUsers().then((users) => {
+      users = _.filter(users, (user) => user.name.indexOf('.yml') >= 0);
       this.setState({users});
     });
   }
 
   loadUser(url) {
-    githubClient.loadUserYaml(url).then((userYaml) => {
+    return githubClient.loadUserYaml(url).then((userYaml) => {
       let user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
       console.log('user', user);
       this.setState({userYaml: yaml.safeLoad(userYaml), user: user});
+      return user;
+    });
+  }
+
+  createUser(){
+    return githubClient.loadTemplate().then((yamlTemplate) => {
+      this.setState({userYaml: yaml.safeLoad(yamlTemplate), user: ''});
+      return '';
     });
   }
 
@@ -77,7 +87,7 @@ export default class App extends Component {
         }
         {github.APIKey &&
         <YamlEditor users={users} user={user} yamlData={userYaml} loadUser={this.loadUser}
-                    saveUser={this.saveUser}/>
+                    saveUser={this.saveUser} createUser={this.createUser}/>
         }
       </div>
     );

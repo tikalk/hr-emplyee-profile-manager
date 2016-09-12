@@ -42,6 +42,7 @@ export default class ExperienceYaml extends Component {
         title, description, years
       });
     }
+    this.props.editingChanged(!this.state.editing);
     this.setState({ editing: !this.state.editing });
   }
 
