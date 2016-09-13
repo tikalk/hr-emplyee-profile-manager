@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import autoBind from 'react-autobind';
+import Dropzone from 'react-dropzone';
 
 export default class MetaData extends Component{
 
@@ -45,14 +46,22 @@ export default class MetaData extends Component{
     this.setState({ editing: !this.state.editing})
   }
 
+  onDrop(files){
+      console.log('Received files: ', files);
+  }
+
   render() {
     const { id, about, login, follow_me_urls, editing } = this.state;
     let followMe;
+    let inputFileStyle = {
+      display : 'none'
+    }
+
     if (!editing) {
       followMe = follow_me_urls.map((url, i) => {
         return (
           <div key={i}>
-            {url}
+            <a href={url}>{url}</a>
           </div>
         );
       });
@@ -107,6 +116,13 @@ export default class MetaData extends Component{
           <div className="col-md-2">Follow Me:</div>
           <div className="col-md-10">{followMe}</div>
         </div>
+
+       <div>
+              <Dropzone onDrop={this.onDrop}>
+                  <div>Click or drop picture here</div>
+              </Dropzone>
+          </div>
+
       </div>
     );
   }

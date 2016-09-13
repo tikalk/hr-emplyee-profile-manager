@@ -38,6 +38,7 @@
     "react": "^15.3.0",
     "react-autobind": "^1.0.6",
     "react-dom": "^15.3.0",
+    "react-dropzone": "^3.6.0",
     "react-markdown": "^2.4.2",
     "request": "^2.74.0"
   }
