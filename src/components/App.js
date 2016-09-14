@@ -3,7 +3,7 @@ import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
 import autoBind from 'react-autobind';
-import fs from 'fs';
+// import fs from 'fs';
 import yaml from 'js-yaml';
 
 let githubClient;
@@ -13,7 +13,7 @@ export default class App extends Component {
     super(props);
     let token;
     try {
-      token = fs.readFileSync('apiToken.dat', 'utf8');
+      token = localStorage.getItem('apiToken');
     }
     catch (ex) {
 
@@ -61,7 +61,7 @@ export default class App extends Component {
     const {github} = this.state;
     github.APIKey = apiToken;
 
-    fs.writeFile('apiToken.dat', github.APIKey);
+    localStorage.setItem('apiToken', github.APIKey);
     this.setState({github});
   }
 

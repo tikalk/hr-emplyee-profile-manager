@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 
-import fs from 'fs';
 import yaml from 'js-yaml';
 import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';
@@ -17,7 +16,6 @@ export default class YamlEditor extends Component {
   constructor(props) {
     super(props);
     const { yamlData } = props;
-    //const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName + '.yaml', 'utf8'));
     autoBind(this);
     this.state = {
       yamlData
