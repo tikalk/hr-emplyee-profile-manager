@@ -1,4 +1,3 @@
-// import {client} from 'github';
 import https from 'https';
 import urlTools from 'url';
 
@@ -16,7 +15,6 @@ export default class GithubClient {
     options.withCredentials = false;
     return new Promise((resolve, reject)=> {
       const req = https.request(options, (res) => {
-//        res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
@@ -49,8 +47,7 @@ export default class GithubClient {
       port: 443,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${token}`,
-        // 'User-Agent': 'Node'
+        'Authorization': `Basic ${token}`
       }
     };
 
@@ -62,7 +59,6 @@ export default class GithubClient {
       const options = urlTools.parse(url);
       options.withCredentials = false;
       const req = https.get(options, (res) => {
-//        res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
