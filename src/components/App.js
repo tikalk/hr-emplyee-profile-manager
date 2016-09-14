@@ -14,7 +14,6 @@ export default class App extends Component {
     let token;
     try {
       token = localStorage.getItem('apiToken');
-      // token = fs.readFileSync('apiToken.dat', 'utf8');
     }
     catch (ex) {
 
@@ -63,7 +62,6 @@ export default class App extends Component {
     github.APIKey = apiToken;
 
     localStorage.setItem('apiToken', github.APIKey);
-    // fs.writeFile('apiToken.dat', github.APIKey);
     this.setState({github});
   }
 
