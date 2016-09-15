@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 //import fs from 'fs';
-import yaml from 'js-yaml';
+import jsYaml from 'js-yaml';
 import _ from 'lodash';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
@@ -17,7 +17,7 @@ export default class YamlEditor extends Component {
   constructor(props) {
     super(props);
     const { yamlData } = props;
-    //const yamlData = yaml.safeLoad(fs.readFileSync(this.props.fileName + '.yaml', 'utf8'));
+    //const yamlData = jsYaml.safeLoad(fs.readFileSync(this.props.fileName + '.jsYaml', 'utf8'));
     autoBind(this);
     this.state = {
       yamlData,
@@ -71,12 +71,13 @@ export default class YamlEditor extends Component {
   save() {
     const { user, saveUser } = this.props;
     const { yamlData, newUser } = this.state;
-    const yamlText = yaml.safeDump(yamlData);
+    if (!yamlData) return;
+    const yamlText = jsYaml.safeDump(yamlData);
     console.log(yamlText);
 
-    if (!user) return;
-    saveUser(user, yamlText);
-
+    saveUser(user || yamlData.login, yamlText).then(()=>{
+      this.state.newUser=false;
+    });
   }
 
   onEditingChanged(itemEditing) {
@@ -101,12 +102,14 @@ export default class YamlEditor extends Component {
   }
 
   render() {
-    const { yamlData, editingCount } = this.state;
+    const { yamlData, editingCount, newUser } = this.state;
     const { users, loadUser } = this.props;
     const { id, about, login, follow_me_urls, ex, first_name, last_name, description } = yamlData || {};
 
     const exBtnClasses = classNames('btn', { 'btn-primary': !ex, 'btn-default': ex });
     const active = ex ? 'Ex-Employee' : 'Active';
+    const canPublish = editingCount === 0 && yamlData && ((!newUser && history.length) || (newUser && login));
+    console.log(canPublish)
     return (
       <div className="profile container">
         <div>
@@ -114,16 +117,16 @@ export default class YamlEditor extends Component {
         </div>
         <div className="main-buttons pull-right">
           <ProfilesList users={users} loadUser={this.loadUser}/>
-          <button className="btn" onClick={this.save} disabled={editingCount>0 || !yamlData}>Publish</button>
+          <button className="btn" onClick={this.save} disabled={!canPublish}>Publish</button>
           <button className="btn" onClick={this.undo} disabled={editingCount>0 || !history.length}>Undo</button>
           <button className="btn" onClick={this.createUser} disabled={editingCount>0}>New Profile</button>
         </div>
         {yamlData &&
         <div>
           <h1 className="titleName">
-            {yamlData.first_name} {yamlData.last_name}
+            {first_name} {last_name}
           </h1>
-          <h2 className="descName">{yamlData.description}</h2>
+          <h2 className="descName">{description}</h2>
           <div>
             <button onClick={this.toggelEx} className={exBtnClasses}>{active}</button>
           </div>

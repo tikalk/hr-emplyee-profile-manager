@@ -5,7 +5,7 @@ import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
 import autoBind from 'react-autobind';
 // import fs from 'fs';
-import yaml from 'js-yaml';
+import jsYaml from 'js-yaml';
 
 let githubClient;
 
@@ -48,21 +48,22 @@ export default class App extends Component {
     return githubClient.loadUserYaml(url).then((userYaml) => {
       let user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
       console.log('user', user);
-      this.setState({userYaml: yaml.safeLoad(userYaml), user: user});
+      this.setState({userYaml: jsYaml.safeLoad(userYaml), user});
       return user;
     });
   }
 
   createUser(){
     return githubClient.loadTemplate().then((yamlTemplate) => {
-      this.setState({userYaml: yaml.safeLoad(yamlTemplate), user: ''});
+      this.setState({userYaml: jsYaml.safeLoad(yamlTemplate), user: ''});
       return '';
     });
   }
 
   saveUser(name, yaml) {
-    githubClient.saveUserYaml(name, yaml).then(() => {
+    return githubClient.saveUserYaml(name, yaml).then(() => {
       console.log("user " + name + ' saved');
+      this.setState({userYaml: jsYaml.safeLoad(yaml), user: name});
       // reload users to update links after commit
       this.loadUsers();
     });
