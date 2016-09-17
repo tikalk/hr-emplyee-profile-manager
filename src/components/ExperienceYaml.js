@@ -6,10 +6,10 @@ export default class ExperienceYaml extends Component {
 
   static propTypes = {
     onSave: PropTypes.func,
-    years: PropTypes.number,
+    years: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string
-  }
+  };
 
   constructor(props) {
     super(props);

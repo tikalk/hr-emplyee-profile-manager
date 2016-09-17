@@ -5,7 +5,7 @@ export default class ProfilesList extends Component {
 
   static propTypes = {
     loadUser: PropTypes.func,
-    users: PropTypes.arra
+    users: PropTypes.array
   }
 
   constructor(props) {

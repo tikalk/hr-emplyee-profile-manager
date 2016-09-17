@@ -50,7 +50,7 @@ export default class GithubClient {
       }
     };
 
-    return this.request(options);
+    return GithubClient.request(options);
   }
 
   static loadUserYaml(url) {

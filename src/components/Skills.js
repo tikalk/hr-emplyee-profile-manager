@@ -6,7 +6,7 @@ import _ from 'lodash';
 export default class Skills extends Component {
 
   static propTypes = {
-    skills: PropTypes.array,
+    skills: PropTypes.object,
     saveSkills: PropTypes.func
   };
 
@@ -43,7 +43,7 @@ export default class Skills extends Component {
     const { editing } = this.state;
     const { skills } = this.props;
     let skls;
-    const btnClasses = classNames('btn', 'glyphicon', {
+    const btnClasses = classNames('glyphicon', {
       'glyphicon-floppy-save': editing,
       'glyphicon-edit': !editing
     });
@@ -76,7 +76,7 @@ export default class Skills extends Component {
     return (
       <div className="container form-inline">
         <div className="row" >
-          <button className={btnClasses} onClick={this.toggleEditing} />
+          <div className={btnClasses} onClick={this.toggleEditing} />
         </div>
         {skls}
       </div>

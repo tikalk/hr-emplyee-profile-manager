@@ -5,11 +5,15 @@ export default class MetaData extends Component {
 
   static propTypes = {
     saveMetaData: PropTypes.func,
-    id: PropTypes.string,
+    id: PropTypes.number,
     about: PropTypes.string,
     login: PropTypes.string,
-    follow_me_urls: PropTypes.string
-  }
+    follow_me_urls: PropTypes.array
+  };
+
+  static defaultProps = {
+    follow_me_urls: []
+  };
 
   constructor(props) {
     super(props);
@@ -18,7 +22,7 @@ export default class MetaData extends Component {
       id: props.id,
       about: props.about,
       login: props.login,
-      follow_me_urls: props.follow_me_urls
+      follow_me_urls: props.follow_me_urls || []
     };
     autoBind(this);
   }

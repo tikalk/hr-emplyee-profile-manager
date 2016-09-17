@@ -50,7 +50,7 @@ export default class App extends Component {
   }
 
   loadUser(url) {
-    githubClient.loadUserYaml(url).then((userYaml) => {
+    GithubClient.loadUserYaml(url).then((userYaml) => {
       const user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
       console.log('user', user);
       this.setState({ userYaml: yaml.safeLoad(userYaml), user });

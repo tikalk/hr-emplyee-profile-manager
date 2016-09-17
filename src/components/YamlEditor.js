@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import yaml from 'js-yaml';
 import _ from 'lodash';
 import autoBind from 'react-autobind';
@@ -13,25 +13,25 @@ const history = [];
 export default class YamlEditor extends Component {
 
   static propTypes = {
-    yamlData: React.PropTypes.object,
-    user: React.PropTypes.string,
-    users: React.PropTypes.array,
-    saveUser: React.propTypes.func,
-    loadUser: React.propTypes.func
+    yamlData: PropTypes.object,
+    user: PropTypes.string,
+    users: PropTypes.array,
+    saveUser: PropTypes.func,
+    loadUser: PropTypes.func
   }
   constructor(props) {
     super(props);
     const { yamlData } = props;
     autoBind(this);
     this.state = {
-      yamlData
+      yamlData: yamlData || {}
     };
   }
 
   componentWillReceiveProps(props) {
     const { yamlData } = props;
     this.setState({
-      yamlData
+      yamlData: yamlData || {}
     });
   }
 
