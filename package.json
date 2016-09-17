@@ -9,6 +9,7 @@
     "lint": "./node_modules/.bin/eslint src"
   },
   "devDependencies": {
+    "babel-eslint": "^6.1.2",
     "babel-loader": "^6.2.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-react-html-attrs": "^2.0.0",
