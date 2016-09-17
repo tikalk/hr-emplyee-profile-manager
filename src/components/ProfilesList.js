@@ -1,7 +1,13 @@
-import React, {Component} from 'react';
+import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
 
 export default class ProfilesList extends Component {
+
+  static propTypes = {
+    loadUser: PropTypes.func,
+    users: PropTypes.array
+  }
+
   constructor(props) {
     super(props);
     autoBind(this);
@@ -16,12 +22,11 @@ export default class ProfilesList extends Component {
     return (
       <div className="btn-group">
         <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Choose user <span className="caret"></span>
+          Choose user <span className="caret" />
         </button>
         <ul className="dropdown-menu">
-          {(users || []).map((user, i) => {
-              return (<li key={i}><a href="#" onClick={this.handleLoadUser.bind(this, user.download_url)}>{user.name}</a></li>);
-            })
+          {(users || []).map((user, i) => (<li key={i}>
+            <a onClick={this.handleLoadUser.bind(this, user.download_url)}>{user.name}</a></li>))
           }
         </ul>
       </div>
