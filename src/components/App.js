@@ -1,11 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
+import jsYaml from 'js-yaml';
+import autoBind from 'react-autobind';
 import _ from 'lodash';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
-import autoBind from 'react-autobind';
-// import fs from 'fs';
-import jsYaml from 'js-yaml';
 
 let githubClient;
 
@@ -15,10 +14,8 @@ export default class App extends Component {
     let token;
     try {
       token = localStorage.getItem('apiToken');
-      // token = fs.readFileSync('apiToken.dat', 'utf8');
-    }
-    catch (ex) {
-
+    } catch (ex) {
+      console.log(ex);
     }
 
     this.state = {
@@ -30,65 +27,71 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    const {github} = this.state;
+    const { github } = this.state;
     if (github.APIKey) {
       githubClient = new GithubClient(github.APIKey);
       this.loadUsers();
     }
   }
 
-  loadUsers() {
-    githubClient.loadUsers().then((users) => {
-      users = _.filter(users, (user) => user.name.indexOf('.yml') >= 0);
-      this.setState({users});
-    });
+  setApiToken(apiToken) {
+    const { github } = this.state;
+    github.APIKey = apiToken;
+
+    localStorage.setItem('apiToken', github.APIKey);
+    // fs.writeFile('apiToken.dat', github.APIKey);
+    this.setState({ github });
   }
 
-  loadUser(url) {
-    return githubClient.loadUserYaml(url).then((userYaml) => {
-      let user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
-      console.log('user', user);
-      this.setState({userYaml: jsYaml.safeLoad(userYaml), user});
-      return user;
-    });
-  }
-
-  createUser(){
+  createUser() {
     return githubClient.loadTemplate().then((yamlTemplate) => {
-      this.setState({userYaml: jsYaml.safeLoad(yamlTemplate), user: ''});
+      this.setState({ userYaml: jsYaml.safeLoad(yamlTemplate), user: '' });
       return '';
     });
   }
 
   saveUser(name, yaml) {
     return githubClient.saveUserYaml(name, yaml).then(() => {
-      console.log("user " + name + ' saved');
-      this.setState({userYaml: jsYaml.safeLoad(yaml), user: name});
+      console.log(`user ${name} saved`);
+      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name });
       // reload users to update links after commit
       this.loadUsers();
     });
   }
 
-  setApiToken(apiToken) {
-    const {github} = this.state;
-    github.APIKey = apiToken;
+  loadUser(url) {
+    return githubClient.loadUserYaml(url).then((userYaml) => {
+      const user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
+      console.log('user', user);
+      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user });
+      return user;
+    });
+  }
 
-    localStorage.setItem('apiToken', github.APIKey);
-    // fs.writeFile('apiToken.dat', github.APIKey);
-    this.setState({github});
+  loadUsers() {
+    githubClient.loadUsers().then((files) => {
+      const users = _.filter(files, (user) => user.name.indexOf('.yml') >= 0);
+      this.setState({ users });
+    });
   }
 
   render() {
-    const {github, users, userYaml, user} = this.state;
+    const { github, users, userYaml, user } = this.state;
 
     return (
       <div className="container app">
         {!github.APIKey &&
-        <GithubLogin setApiToken={this.setApiToken.bind(this)}/>
+          <GithubLogin setApiToken={this.setApiToken} />
         }
         {github.APIKey &&
-        <YamlEditor users={users} user={user} yamlData={userYaml} loadUser={this.loadUser}
-                    saveUser={this.saveUser} createUser={this.createUser}/>
+          <YamlEditor
+            users={users}
+            user={user}
+            yamlData={userYaml}
+            loadUser={this.loadUser}
+            saveUser={this.saveUser}
+            createUser={this.createUser}
+          />
         }
       </div>
     );
