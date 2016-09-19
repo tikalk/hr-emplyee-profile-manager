@@ -69,7 +69,11 @@
 
 }
 
-.photo-container .photo{
+.photo-wrapper{
+	margin-top: 50px;
+}
+
+.photo{
 	width: 250px;
 	height: 250px;
 

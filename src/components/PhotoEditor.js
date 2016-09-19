@@ -93,7 +93,7 @@ export default class PhotoEditor extends Component{
                     }
 
                     {
-                        image_path  ? <img className="photo" src={image_path} /> : null
+                        image_path  ? <div className="photo-wrapper"><img className="photo" src={image_path} /></div> : null
                     }
 
 
