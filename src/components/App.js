@@ -5,6 +5,7 @@ import GithubClient from '../lib/githubClient';
 import autoBind from 'react-autobind';
 import fs from 'fs';
 import yaml from 'js-yaml';
+import {filter} from 'lodash'
 
 let githubClient;
 
@@ -37,6 +38,7 @@ export default class App extends Component {
 
   loadUsers() {
     githubClient.loadUsers().then((users) => {
+      users = filter(users,(user)=>{return !user.ex});
       this.setState({users});
     });
   }
