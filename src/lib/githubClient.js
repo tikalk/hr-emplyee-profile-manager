@@ -1,9 +1,14 @@
+import GitHub from 'github-api';
 import https from 'https';
 import urlTools from 'url';
 import _ from 'lodash';
 
 export default class GithubClient {
   constructor(token) {
+    this.gh = new GitHub({ token });
+    this.repo = this.gh.getRepo('tikalk', 'tikal_jekyll_website');
+    // eslint-disable-next-line
+    this.repo.__authorizationHeader = `Basic ${token}`;
     this.token = token;
     this.hostName = 'api.github.com';
     this.basePath = '/repos/tikalk/tikal_jekyll_website';
@@ -39,20 +44,70 @@ export default class GithubClient {
     });
   }
 
-  loadUsers() {
-    const { basePath, userPath, branch, token, hostName } = this;
-    const options = {
-      hostname: hostName,
-      path: `${basePath}/contents/${userPath}?ref=${branch}`,
-      method: 'GET',
-      port: 443,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${token}`
-      }
-    };
+  move(branch, oldPath, newPath, cb) {
+    let oldSha;
+    return this.repo.getRef(`heads/${branch}`)
+      .then(({ data: { object } }) => this.repo.getTree(`${object.sha}?recursive=true`))
+      .then(({ data: { tree, sha } }) => {
+        oldSha = sha;
+        const newTree = tree.map((ref) => {
+          const entry = { ...ref };
+          delete entry.url;
+          if (entry.path === oldPath) {
+            entry.path = newPath;
+          }
+          // else if (entry.type === 'tree' && oldPath.startsWith(entry.path)) {
+          //   console.log(entry);
+          //   delete entry.sha;
+          // }
+          return entry;
+        }).filter((ref) => ref.type !== 'tree' || !oldPath.startsWith(ref.path));
+        // console.log(newTree.length, tree.length);
+        return this.repo.createTree(newTree);
+      })
+      .then(({ data: tree }) => this.repo.commit(oldSha, tree.sha, `Renamed '${oldPath}' to '${newPath}'`))
+      .then(({ data: commit }) => this.repo.updateHead(`heads/${branch}`, commit.sha, true, cb));
+  }
 
-    return this.request(options);
+  loadUsers() {
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, userPath, false).then(({ data }) => {
+/*
+      this.repo.getBlob(data[0].sha).then(({ data }) => {
+        this.repo.writeFile(branch, `${userPath}/test2.txt`, 'blaz', 'test api', {}).then(x => {
+          console.log(x);
+        });
+      });
+*/
+/*
+      this.move(branch, `${userPath}/test2.ex.txt`, `${userPath}/test2.txt`).then((x) => {
+        console.log(x);
+        // this.repo.writeFile(branch, userPath+'/test2.ex.txt', 'bla ex', 'test api', {}).then(x=>{
+        //   console.log(x);
+        // });
+      });
+*/
+
+
+      return data;
+    });
+
+
+    /*
+     const { basePath, userPath, branch, token, hostName } = this;
+     const options = {
+     hostname: hostName,
+     path: `${basePath}/contents/${userPath}?ref=${branch}`,
+     method: 'GET',
+     port: 443,
+     headers: {
+     'Content-Type': 'application/json',
+     Authorization: `Basic ${token}`
+     }
+     };
+
+     return this.request(options);
+     */
   }
 
   loadUserYaml(url) {
