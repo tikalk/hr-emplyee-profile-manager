@@ -1,23 +1,28 @@
 import React, { Component } from 'react';
 import autoBind from 'react-autobind';
-import Dropzone from 'react-dropzone';
+import PhotoEditor from './PhotoEditor'
+
 
 export default class MetaData extends Component{
 
   constructor(props) {
     super(props);
+
     this.state = {
       editing: false,
       id: props.id,
       about: props.about,
       login: props.login,
-      follow_me_urls: props.follow_me_urls
+      follow_me_urls: props.follow_me_urls,
     };
     autoBind(this);
   }
 
   componentWillReceiveProps(props) {
-    this.setState(
+
+      console.log("Props are :",props);
+
+      this.setState(
       {
         id: props.id,
         about: props.about,
@@ -46,22 +51,14 @@ export default class MetaData extends Component{
     this.setState({ editing: !this.state.editing})
   }
 
-  onDrop(files){
-      console.log('Received files: ', files);
-  }
-
   render() {
-    const { id, about, login, follow_me_urls, editing } = this.state;
+    const { id, about, login, follow_me_urls,editing } = this.state;
     let followMe;
-    let inputFileStyle = {
-      display : 'none'
-    }
-
-    if (!editing) {
+      if (!editing) {
       followMe = follow_me_urls.map((url, i) => {
         return (
           <div key={i}>
-            <a href={url}>{url}</a>
+            <a target="_blank" href={url}>{url}</a>
           </div>
         );
       });
@@ -117,12 +114,7 @@ export default class MetaData extends Component{
           <div className="col-md-10">{followMe}</div>
         </div>
 
-       <div>
-              <Dropzone onDrop={this.onDrop}>
-                  <div>Click or drop picture here</div>
-              </Dropzone>
-          </div>
-
+        <PhotoEditor />
       </div>
     );
   }

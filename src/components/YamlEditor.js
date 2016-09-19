@@ -49,7 +49,7 @@ export default class YamlEditor extends Component {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
     _.merge(yamlData, metadata);
-    this.setState({yamlData});
+      this.setState({yamlData});
   }
 
   undo() {
