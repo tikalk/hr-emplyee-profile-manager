@@ -7,7 +7,8 @@ export default class Skills extends Component {
 
   static propTypes = {
     skills: PropTypes.object,
-    saveSkills: PropTypes.func
+    saveSkills: PropTypes.func,
+    editingChanged: PropTypes.func
   };
 
   constructor(props) {
@@ -30,6 +31,7 @@ export default class Skills extends Component {
     if (editing) {
       this.props.saveSkills(skills);
     }
+    this.props.editingChanged(!this.state.editing);
     this.setState({ editing: !this.state.editing });
   }
 

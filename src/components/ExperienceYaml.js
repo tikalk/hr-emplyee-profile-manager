@@ -6,6 +6,7 @@ export default class ExperienceYaml extends Component {
 
   static propTypes = {
     onSave: PropTypes.func,
+    editingChanged: PropTypes.func,
     years: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string
@@ -51,6 +52,7 @@ export default class ExperienceYaml extends Component {
         title, description, years
       });
     }
+    this.props.editingChanged(!this.state.editing);
     this.setState({ editing: !this.state.editing });
   }
 
@@ -67,7 +69,9 @@ export default class ExperienceYaml extends Component {
               <i onClick={this.toggleEditing} className="glyphicon glyphicon-floppy-save" />
             </span>
             :
-            <span className="col-md-1"><i onClick={this.toggleEditing} className="glyphicon glyphicon-edit" /></span>
+            <span className="col-md-1">
+              <i onClick={this.toggleEditing} className="glyphicon glyphicon-edit" />
+            </span>
           }
           <span className="col-md-2">years</span>
           <span className="col-md-9">
@@ -92,7 +96,11 @@ export default class ExperienceYaml extends Component {
           <span className="col-md-2 col-md-offset-1">description</span>
           <span className="col-md-9">
             {editing ?
-              <textarea className="form-control description-textarea" onChange={this.updateDesc} defaultValue={description} />
+              <textarea
+                className="form-control description-textarea"
+                onChange={this.updateDesc}
+                defaultValue={description}
+              />
               :
               <span>
                 <ReactMarkdown softBreak="br" source={description} />

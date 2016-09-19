@@ -6,7 +6,7 @@ export default class ProfilesList extends Component {
   static propTypes = {
     loadUser: PropTypes.func,
     users: PropTypes.array
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -21,8 +21,11 @@ export default class ProfilesList extends Component {
     const { users } = this.props;
     return (
       <div className="btn-group">
-        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Choose user <span className="caret" />
+        <button
+          type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false"
+        >
+          Choose Profile <span className="caret" />
         </button>
         <ul className="dropdown-menu">
           {(users || []).map((user, i) => (<li key={i}>

@@ -1,5 +1,6 @@
 import https from 'https';
 import urlTools from 'url';
+import _ from 'lodash';
 
 export default class GithubClient {
   constructor(token) {
@@ -11,7 +12,8 @@ export default class GithubClient {
     this.userPath = '_data/users';
   }
 
-  static request(options) {
+  request(options_) {
+    const options = { ...options_, withCredentials: false, hostname: this.hostName };
     return new Promise((resolve, reject) => {
       const req = https.request(options, (res) => {
         const dataBuffer = [];
@@ -50,10 +52,10 @@ export default class GithubClient {
       }
     };
 
-    return GithubClient.request(options);
+    return this.request(options);
   }
 
-  static loadUserYaml(url) {
+  loadUserYaml(url) {
     return new Promise((resolve, reject) => {
       const options = urlTools.parse(url);
       options.withCredentials = false;
@@ -75,6 +77,13 @@ export default class GithubClient {
         console.log('XHR failed:', e.message);
         reject(e.message);
       });
+    });
+  }
+
+  loadTemplate() {
+    return this.loadUsers().then((users) => {
+      const { download_url } = _.find(users, { name: 'template.txt' });
+      return this.loadUserYaml(download_url);
     });
   }
 

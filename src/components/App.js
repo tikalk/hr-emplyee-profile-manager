@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import yaml from 'js-yaml';
+import jsYaml from 'js-yaml';
 import autoBind from 'react-autobind';
+import _ from 'lodash';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
@@ -38,27 +39,38 @@ export default class App extends Component {
     github.APIKey = apiToken;
 
     localStorage.setItem('apiToken', github.APIKey);
+    // fs.writeFile('apiToken.dat', github.APIKey);
     this.setState({ github });
   }
 
-  saveUser(name, yml) {
-    githubClient.saveUserYaml(name, yml).then(() => {
+  createUser() {
+    return githubClient.loadTemplate().then((yamlTemplate) => {
+      this.setState({ userYaml: jsYaml.safeLoad(yamlTemplate), user: '' });
+      return '';
+    });
+  }
+
+  saveUser(name, yaml) {
+    return githubClient.saveUserYaml(name, yaml).then(() => {
       console.log(`user ${name} saved`);
+      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name });
       // reload users to update links after commit
       this.loadUsers();
     });
   }
 
   loadUser(url) {
-    GithubClient.loadUserYaml(url).then((userYaml) => {
+    return githubClient.loadUserYaml(url).then((userYaml) => {
       const user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
       console.log('user', user);
-      this.setState({ userYaml: yaml.safeLoad(userYaml), user });
+      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user });
+      return user;
     });
   }
 
   loadUsers() {
-    githubClient.loadUsers().then((users) => {
+    githubClient.loadUsers().then((files) => {
+      const users = _.filter(files, (user) => user.name.indexOf('.yml') >= 0);
       this.setState({ users });
     });
   }
@@ -78,6 +90,7 @@ export default class App extends Component {
             yamlData={userYaml}
             loadUser={this.loadUser}
             saveUser={this.saveUser}
+            createUser={this.createUser}
           />
         }
       </div>
