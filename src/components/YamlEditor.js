@@ -7,7 +7,6 @@ import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
 import ProfilesList from './ProfilesList';
-
 const history = [];
 
 export default class YamlEditor extends Component {

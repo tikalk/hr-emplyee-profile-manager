@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
+import PhotoEditor from './PhotoEditor';
+
 
 export default class MetaData extends Component {
 
@@ -84,7 +86,7 @@ export default class MetaData extends Component {
       followMe = followMeUrls.map((url, i) => {
         return (
           <div key={i}>
-            {url}
+            <a target="_blank" href={url}>{url}</a>
           </div>
         );
       });
@@ -194,6 +196,7 @@ export default class MetaData extends Component {
           <div className="col-md-2">Follow Me:</div>
           <div className="col-md-10">{followMe}</div>
         </div>
+        <PhotoEditor />
       </div>
     );
   }

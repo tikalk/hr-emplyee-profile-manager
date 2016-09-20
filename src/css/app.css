@@ -59,3 +59,22 @@
 .main-buttons button {
 	margin-left: 15px;
 }
+
+.photo-container{
+	padding:10px;
+}
+
+.upload{
+	margin : 30px 0px;
+
+}
+
+.photo-wrapper{
+	margin-top: 50px;
+}
+
+.photo{
+	width: 250px;
+	height: 250px;
+
+}

@@ -1,11 +1,12 @@
-var webpack = require('webpack');
+const webpack = require('webpack');
+
 module.exports = {
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'source-map',
   entry: {
     app: ['webpack/hot/dev-server', './src/js/main.js'],
   },
-  //target: "node",
+  // target: "node",
   output: {
     path: './src/built',
     filename: 'bundle.js',
@@ -27,7 +28,7 @@ module.exports = {
         }
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
-      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
+      { test: /\.less$/, loader: 'style-loader!css-loader!less-loader' },
       { test: /\.json$/,
         loader: 'json-loader'
       }
