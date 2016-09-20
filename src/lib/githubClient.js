@@ -1,5 +1,6 @@
-import {client} from 'github';
 import https from 'https';
+import urlTools from 'url';
+import _ from 'lodash';
 
 export default class GithubClient {
   constructor(token) {
@@ -11,10 +12,10 @@ export default class GithubClient {
     this.userPath = '_data/users';
   }
 
-  request(options) {
-    return new Promise((resolve, reject)=> {
+  request(options_) {
+    const options = { ...options_, withCredentials: false, hostname: this.hostName };
+    return new Promise((resolve, reject) => {
       const req = https.request(options, (res) => {
-        res.setEncoding('utf8');
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
@@ -32,13 +33,14 @@ export default class GithubClient {
         console.log('XHR failed:', e.message);
         reject(e.message);
       });
+      // if(options.withCredentials !== undefined) req.xhr.withCredentials = options.withCredentials;
       // write data to request body
       req.end(options.body);
     });
   }
 
   loadUsers() {
-    const {basePath, userPath, branch, token, hostName} = this;
+    const { basePath, userPath, branch, token, hostName } = this;
     const options = {
       hostname: hostName,
       path: `${basePath}/contents/${userPath}?ref=${branch}`,
@@ -46,8 +48,7 @@ export default class GithubClient {
       port: 443,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${token}`,
-        'User-Agent': 'Node'
+        Authorization: `Basic ${token}`
       }
     };
 
@@ -55,9 +56,10 @@ export default class GithubClient {
   }
 
   loadUserYaml(url) {
-    return new Promise((resolve, reject)=> {
-      const req = https.get(url, (res) => {
-        res.setEncoding('utf8');
+    return new Promise((resolve, reject) => {
+      const options = urlTools.parse(url);
+      options.withCredentials = false;
+      const req = https.get(options, (res) => {
         const dataBuffer = [];
         res.on('data', (chunk) => {
           dataBuffer.push(chunk);
@@ -78,34 +80,44 @@ export default class GithubClient {
     });
   }
 
+  loadTemplate() {
+    return this.loadUsers().then((users) => {
+      const { download_url } = _.find(users, { name: 'template.txt' });
+      return this.loadUserYaml(download_url);
+    });
+  }
+
   saveUserYaml(userName, yaml, message) {
     return this.saveBlob(`${this.userPath}/${userName}.yml`, yaml, message || `saving ${userName} profile`);
   }
 
   saveBlob(fullFileName, blob, message) {
-    const {basePath, branch, token, hostName} = this;
+    const { basePath, branch, token, hostName } = this;
     const options = {
       hostname: hostName,
       port: 443,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${token}`,
+        Authorization: `Basic ${token}`,
         'User-Agent': 'Node'
       }
     };
 
-    let SHA_LATEST_COMMIT, SHA_BASE_TREE, SHA_NEW_TREE, SHA_NEW_COMMIT;
+    let SHA_LATEST_COMMIT;
+    let SHA_BASE_TREE;
+    let SHA_NEW_TREE;
+    let SHA_NEW_COMMIT;
 
     options.path = `${basePath}/git/refs/heads/${branch}`;
     options.method = 'GET';
     return this.request(options)
-      .then((res)=> {
+      .then((res) => {
         SHA_LATEST_COMMIT = res.object.sha;
         options.path = `${basePath}/git/commits/${SHA_LATEST_COMMIT}`;
         options.method = 'GET';
         return this.request(options);
       })
-      .then((res)=> {
+      .then((res) => {
         SHA_BASE_TREE = res.tree.sha;
         options.path = `${basePath}/git/trees`;
         options.method = 'POST';
@@ -113,9 +125,9 @@ export default class GithubClient {
           base_tree: SHA_BASE_TREE,
           tree: [
             {
-              mode: "100644",
-              type: "blob",
-              encoding: "utf-8",
+              mode: '100644',
+              type: 'blob',
+              encoding: 'utf-8',
               path: fullFileName,
               content: blob
             }
@@ -123,31 +135,29 @@ export default class GithubClient {
         });
         return this.request(options);
       })
-      .then((res)=> {
+      .then((res) => {
         SHA_NEW_TREE = res.sha;
         options.path = `${basePath}/git/commits`;
         options.method = 'POST';
         options.body = JSON.stringify({
-          "message": message || fullFileName,
-          "parents": [
+          message: message || fullFileName,
+          parents: [
             SHA_LATEST_COMMIT
           ],
-          "tree": SHA_NEW_TREE
+          tree: SHA_NEW_TREE
         });
         return this.request(options);
       })
-      .then((res)=> {
+      .then((res) => {
         SHA_NEW_COMMIT = res.sha;
         options.path = `${basePath}/git/refs/heads/${branch}`;
         options.method = 'POST';
         options.body = JSON.stringify({
-          "sha": SHA_NEW_COMMIT,
-          "force": true
+          sha: SHA_NEW_COMMIT,
+          force: true
         });
         return this.request(options);
       })
-      .then((res)=> {
-        return true;
-      });
+      .then(() => true);
   }
 }

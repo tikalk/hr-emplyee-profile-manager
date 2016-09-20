@@ -5,7 +5,7 @@ module.exports = {
   entry: {
     app: ['webpack/hot/dev-server', './src/js/main.js'],
   },
-  target: "node",
+  //target: "node",
   output: {
     path: './src/built',
     filename: 'bundle.js',
