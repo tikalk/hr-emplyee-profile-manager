@@ -1,7 +1,6 @@
 import GitHub from 'github-api';
 import https from 'https';
 import urlTools from 'url';
-import _ from 'lodash';
 
 export default class GithubClient {
   constructor(token) {
@@ -9,12 +8,15 @@ export default class GithubClient {
     this.repo = this.gh.getRepo('tikalk', 'tikal_jekyll_website');
     // eslint-disable-next-line
     this.repo.__authorizationHeader = `Basic ${token}`;
+    // eslint-disable-next-line
+    this.repo.move = repoMove;
     this.token = token;
     this.hostName = 'api.github.com';
     this.basePath = '/repos/tikalk/tikal_jekyll_website';
     this.branch = 'master';
     this.branch = 'profile_editor_test';
     this.userPath = '_data/users';
+    this.picturePath = '_assets/images';
   }
 
   request(options_) {
@@ -44,70 +46,49 @@ export default class GithubClient {
     });
   }
 
-  move(branch, oldPath, newPath, cb) {
-    let oldSha;
-    return this.repo.getRef(`heads/${branch}`)
-      .then(({ data: { object } }) => this.repo.getTree(`${object.sha}?recursive=true`))
-      .then(({ data: { tree, sha } }) => {
-        oldSha = sha;
-        const newTree = tree.map((ref) => {
-          const entry = { ...ref };
-          delete entry.url;
-          if (entry.path === oldPath) {
-            entry.path = newPath;
-          }
-          // else if (entry.type === 'tree' && oldPath.startsWith(entry.path)) {
-          //   console.log(entry);
-          //   delete entry.sha;
-          // }
-          return entry;
-        }).filter((ref) => ref.type !== 'tree' || !oldPath.startsWith(ref.path));
-        // console.log(newTree.length, tree.length);
-        return this.repo.createTree(newTree);
-      })
-      .then(({ data: tree }) => this.repo.commit(oldSha, tree.sha, `Renamed '${oldPath}' to '${newPath}'`))
-      .then(({ data: commit }) => this.repo.updateHead(`heads/${branch}`, commit.sha, true, cb));
-  }
-
   loadUsers() {
     const { userPath, branch } = this;
-    return this.repo.getContents(branch, userPath, false).then(({ data }) => {
-/*
-      this.repo.getBlob(data[0].sha).then(({ data }) => {
-        this.repo.writeFile(branch, `${userPath}/test2.txt`, 'blaz', 'test api', {}).then(x => {
-          console.log(x);
-        });
+    return this.repo.getContents(branch, userPath, false)
+      .then(({ data }) => {
+        return data
+          .filter((entry) => entry.name.endsWith('.yml') && entry.type === 'file')
+          .map((entry) => {
+            const { name, download_url } = entry;
+            const isEx = name.toLowerCase().endsWith('.ex.yml');
+            const user = name.substr(0, name.length - 4);
+            const display = user.toLowerCase().substr(0, user.length - (isEx ? 3 : 0));
+            return ({ download_url, user, isEx, display });
+          })
+          .sort((a, b) => {
+            if (a.isEx !== b.isEx) {
+              return a.isEx ? 1 : -1;
+            }
+            const ai = a.user.toLowerCase();
+            const bi = b.user.toLowerCase();
+            if (ai > bi) {
+              return 1;
+            }
+            if (ai < bi) {
+              return -1;
+            }
+            return 0;
+          });
       });
-*/
-/*
-      this.move(branch, `${userPath}/test2.ex.txt`, `${userPath}/test2.txt`).then((x) => {
-        console.log(x);
-        // this.repo.writeFile(branch, userPath+'/test2.ex.txt', 'bla ex', 'test api', {}).then(x=>{
-        //   console.log(x);
-        // });
-      });
-*/
+  }
 
+  loadUser(userName) {
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, `${userPath}/${userName}.yml`, true).then(({ data }) => data);
+  }
 
-      return data;
-    });
-
-
-    /*
-     const { basePath, userPath, branch, token, hostName } = this;
-     const options = {
-     hostname: hostName,
-     path: `${basePath}/contents/${userPath}?ref=${branch}`,
-     method: 'GET',
-     port: 443,
-     headers: {
-     'Content-Type': 'application/json',
-     Authorization: `Basic ${token}`
-     }
-     };
-
-     return this.request(options);
-     */
+  saveUser(oldUserName, userName, yaml, message = `saved ${userName} profile`) {
+    const { userPath, branch } = this;
+    const src = `${userPath}/${oldUserName}`;
+    const trg = `${userPath}/${userName}`;
+    const needRename = oldUserName && oldUserName !== userName;
+    // rename if necessary and then write updated yaml
+    return (needRename ? this.repo.move(branch, src, trg) : Promise.resolve())
+      .then(() => this.repo.writeFile(branch, trg, yaml, message, {}));
   }
 
   loadUserYaml(url) {
@@ -121,7 +102,7 @@ export default class GithubClient {
         });
         res.on('end', () => {
           if (res.statusCode < 200 || res.statusCode > 299) {
-            console.log('XHR failed:', res.statusMessage);
+            console.error('XHR failed:', res.statusMessage);
             reject(res.statusMessage);
             return;
           }
@@ -129,17 +110,15 @@ export default class GithubClient {
         });
       });
       req.on('error', (e) => {
-        console.log('XHR failed:', e.message);
+        console.error('XHR failed:', e.message);
         reject(e.message);
       });
     });
   }
 
   loadTemplate() {
-    return this.loadUsers().then((users) => {
-      const { download_url } = _.find(users, { name: 'template.txt' });
-      return this.loadUserYaml(download_url);
-    });
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, `${userPath}/template.txt`, true).then(({ data }) => data);
   }
 
   saveUserYaml(userName, yaml, message) {
@@ -215,4 +194,62 @@ export default class GithubClient {
       })
       .then(() => true);
   }
+
+  static verifyImagePath(imagePath) {
+    if (!imagePath.startsWith('pictures/')) {
+      return Promise.reject('Wrong image name. Should begin with "pictures/..."');
+    }
+    return Promise.resolve();
+  }
+
+  saveUserPicture(imagePath, blob64) {
+    return GithubClient.verifyImagePath(imagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        return this.repo.writeFile(branch, `${picturePath}/${imagePath}`, blob64,
+          'image updated', { encode: false });
+      })
+      .then(() => true);
+  }
+
+  loadUserPicture(imagePath) {
+    return GithubClient.verifyImagePath(imagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        return this.repo.getContents(branch, `${picturePath}/${imagePath}`, true);
+      })
+      .then(({ data: { content } }) => content);
+  }
+
+  renameUserPicture(oldImagePath, newImagePath) {
+    return GithubClient.verifyImagePath(newImagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        const src = `${picturePath}/${oldImagePath}`;
+        const trg = `${picturePath}/${newImagePath}`;
+        return this.repo.move(branch, src, trg,
+          `image renamed from ${oldImagePath} to ${newImagePath}`);
+      })
+      .then(() => true);
+  }
+}
+
+function repoMove(branch, oldPath, newPath, cb) {
+  let oldSha;
+  return this.getRef(`heads/${branch}`)
+    .then(({ data: { object } }) => this.getTree(`${object.sha}?recursive=true`))
+    .then(({ data: { tree, sha } }) => {
+      oldSha = sha;
+      const newTree = tree.map((ref) => {
+        const entry = { ...ref };
+        delete entry.url;
+        if (entry.path === oldPath) {
+          entry.path = newPath;
+        }
+        return entry;
+      }).filter((ref) => ref.type !== 'tree' || !oldPath.startsWith(ref.path));
+      return this.createTree(newTree);
+    })
+    .then(({ data: tree }) => this.commit(oldSha, tree.sha, `Renamed '${oldPath}' to '${newPath}'`))
+    .then(({ data: commit }) => this.updateHead(`heads/${branch}`, commit.sha, true, cb));
 }

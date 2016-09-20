@@ -69,8 +69,7 @@ export default class App extends Component {
   }
 
   loadUsers() {
-    githubClient.loadUsers().then((files) => {
-      const users = _.filter(files, (user) => user.name.indexOf('.yml') >= 0);
+    githubClient.loadUsers().then((users) => {
       this.setState({ users });
     });
   }

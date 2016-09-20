@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import autoBind from 'react-autobind';
 
 export default class ProfilesList extends Component {
@@ -19,6 +19,9 @@ export default class ProfilesList extends Component {
 
   render() {
     const { users } = this.props;
+    const exStyle = {
+      color: 'gray'
+    };
     return (
       <div className="btn-group">
         <button
@@ -28,8 +31,13 @@ export default class ProfilesList extends Component {
           Choose Profile <span className="caret" />
         </button>
         <ul className="dropdown-menu">
-          {(users || []).map((user, i) => (<li key={i}>
-            <a onClick={this.handleLoadUser.bind(this, user.download_url)}>{user.name}</a></li>))
+          {(users || []).map((user) => (<li key={user.user}>
+            <a
+              onClick={this.handleLoadUser.bind(this, user.download_url)}
+              style={user.isEx ? exStyle : {}}
+            >
+              {user.display}
+            </a></li>))
           }
         </ul>
       </div>
