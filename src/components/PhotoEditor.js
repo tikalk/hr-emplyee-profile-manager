@@ -29,22 +29,20 @@ export default class PhotoEditor extends Component {
       }
     );
   }
-  onUploadPhoto() {
-    const { image_path } = this.state;
-    this.props.saveMetaData({ image_path });
-  }
-
   onDrop(files) {
     const imagePath = get(files, '[0].preview', null);
+    const pictureFile = get(files, '[0]');
     this.setState({
       imagePath
     });
+    this.props.saveMetaData({ pictureFile });
   }
   toggleEditing() {
     this.setState({ editing: !this.state.editing });
   }
   render() {
     const { imagePath, editing } = this.state;
+
     return (
       <div className="container">
         <div className="photo-container">
@@ -56,9 +54,6 @@ export default class PhotoEditor extends Component {
           }
           {
             editing ? <div>
-              <div className="upload">
-                <button onClick={this.onUploadPhoto}>Upload</button>
-              </div>
               <div><Dropzone onDrop={this.onDrop}>
                 <div>Drop or click here to choose a picture</div>
               </Dropzone></div>

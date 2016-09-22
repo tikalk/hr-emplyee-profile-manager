@@ -160,4 +160,21 @@ export default class GithubClient {
       })
       .then(() => true);
   }
+
+  saveUserPicture(imagePath, blob64) {
+    return Promise.resolve(blob64);
+  }
+
+  loadUserPicture(imagePath) {
+    /*
+      stub - resolve just for consistent lint pass
+      */
+    Promise.resolve(imagePath);
+  }
+  renameUserPicture(oldPath, newPath) {
+  /*
+     stub -  resolve just for consistent lint pass
+    */
+    Promise.resolve(`${oldPath}${newPath}`);
+  }
 }

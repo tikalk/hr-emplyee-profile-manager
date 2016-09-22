@@ -86,7 +86,7 @@ export default class MetaData extends Component {
       followMe = followMeUrls.map((url, i) => {
         return (
           <div key={i}>
-            <a target="_blank" href={url}>{url}</a>
+            <a rel="noopener noreferrer" target="_blank" href={url}>{url}</a>
           </div>
         );
       });
@@ -196,7 +196,7 @@ export default class MetaData extends Component {
           <div className="col-md-2">Follow Me:</div>
           <div className="col-md-10">{followMe}</div>
         </div>
-        <PhotoEditor />
+        <PhotoEditor saveMetaData={this.props.saveMetaData} />
       </div>
     );
   }

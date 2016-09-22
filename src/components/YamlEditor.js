@@ -7,6 +7,7 @@ import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
 import ProfilesList from './ProfilesList';
+
 const history = [];
 
 export default class YamlEditor extends Component {
@@ -17,7 +18,10 @@ export default class YamlEditor extends Component {
     users: PropTypes.array,
     saveUser: PropTypes.func,
     loadUser: PropTypes.func,
-    createUser: PropTypes.func
+    createUser: PropTypes.func,
+    saveUserPicture: PropTypes.func,
+    loadUserPicture: PropTypes.func,
+    renameUserPicture: PropTypes.func
   };
 
   constructor(props) {
@@ -81,10 +85,11 @@ export default class YamlEditor extends Component {
     const { user, saveUser } = this.props;
     const { yamlData } = this.state;
     if (!yamlData) return;
+    const pictureFile = yamlData.pictureFile;
+    delete yamlData.pictureFile;
     const yamlText = jsYaml.safeDump(yamlData);
     console.log(yamlText);
-
-    saveUser(user || yamlData.login, yamlText).then(() => {
+    saveUser(user || yamlData.login, yamlText, pictureFile).then(() => {
       this.state.newUser = false;
     });
   }
