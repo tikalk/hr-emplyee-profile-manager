@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
-import classNames from 'classnames';
 import _ from 'lodash';
+import EditToggle from './EditToggle';
 
 export default class Skills extends Component {
 
@@ -45,10 +45,6 @@ export default class Skills extends Component {
     const { editing } = this.state;
     const { skills } = this.props;
     let skls;
-    const btnClasses = classNames('glyphicon', {
-      'glyphicon-floppy-save': editing,
-      'glyphicon-edit': !editing
-    });
     if (!editing) {
       skls = _.reduce(skills, (result, value, key) => {
         result.push(<div key={key} className="row">
@@ -78,7 +74,7 @@ export default class Skills extends Component {
     return (
       <div className="container form-inline">
         <div className="row" >
-          <div className={btnClasses} onClick={this.toggleEditing} />
+          <EditToggle onToggleEditing={this.toggleEditing} editing={editing} />
         </div>
         {skls}
       </div>
