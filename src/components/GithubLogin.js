@@ -6,8 +6,10 @@ export default class GithubLogin extends React.Component {
   };
 
   updateApiToken() {
-    this.props.setApiToken(new Buffer(`${this.username.value}:${this.apiTokenInput.value}`)
-    .toString('base64'));
+    this.props.setApiToken({
+      user: this.username.value,
+      token: this.apiTokenInput.value
+    });
   }
 
   render() {
