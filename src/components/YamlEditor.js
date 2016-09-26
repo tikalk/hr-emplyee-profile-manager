@@ -90,8 +90,8 @@ export default class YamlEditor extends Component {
     });
   }
 
-  loadUser(url) {
-    return this.props.loadUser(url).then(() => {
+  loadUser(user) {
+    return this.props.loadUser(user).then(() => {
       history.length = 0;
       this.setState({ newUser: false });
     });

@@ -23,11 +23,11 @@ export default class GithubClient {
         return data
           .filter((entry) => entry.name.endsWith('.yml') && entry.type === 'file')
           .map((entry) => {
-            const { name, download_url } = entry;
+            const { name } = entry;
             const isEx = name.toLowerCase().endsWith('.ex.yml');
             const user = name.substr(0, name.length - 4);
             const display = user.toLowerCase().substr(0, user.length - (isEx ? 3 : 0));
-            return { download_url, user, isEx, display };
+            return { user, isEx, display };
           });
       });
   }

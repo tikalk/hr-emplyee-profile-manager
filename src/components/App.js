@@ -17,7 +17,7 @@ export default class App extends Component {
       if (auth) auth = JSON.parse(auth);
       if (auth && !auth.token) auth = undefined;
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
     }
 
     this.state = {
@@ -69,8 +69,8 @@ export default class App extends Component {
     });
   }
 
-  loadUser(url) {
-    const user = url.substring(0, url.indexOf('.yml')).replace(/^.*[\\\/]/, '');
+  loadUser(userInfo) {
+    const { user } = userInfo;
     console.log('user', user);
     return githubClient.loadUserProfile(user).then((userYaml) => {
       this.setState({ userYaml: jsYaml.safeLoad(userYaml), user });
