@@ -84,13 +84,13 @@ export default class YamlEditor extends Component {
     const yamlText = jsYaml.safeDump(yamlData);
     console.log(yamlText);
 
-    saveUser(user || yamlData.login, yamlText).then(() => {
+    saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText).then(() => {
       this.state.newUser = false;
     });
   }
 
-  loadUser(url) {
-    return this.props.loadUser(url).then(() => {
+  loadUser(user) {
+    return this.props.loadUser(user).then(() => {
       history.length = 0;
       this.setState({ newUser: false });
     });
