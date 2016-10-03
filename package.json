@@ -1,11 +1,12 @@
 {
-  "name": "my-electron-app",
+  "name": "employee-manager",
   "version": "0.1.0",
   "main": "main.js",
   "scripts": {
     "start": "./node_modules/electron-prebuilt/dist/Electron.app/Contents/MacOS/Electron .",
     "watch": "./node_modules/.bin/webpack-dev-server",
-    "electron-rebuild": "./node_modules/.bin/electron-rebuild"
+    "electron-rebuild": "./node_modules/.bin/electron-rebuild",
+    "package": "electron-packager ./ employee-manager --all"
   },
   "devDependencies": {
     "babel-loader": "^6.2.0",
