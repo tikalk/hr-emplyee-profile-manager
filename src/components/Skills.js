@@ -9,6 +9,10 @@ const errStyle = {
   outline: '1px solid red'
 };
 
+const invisible = {
+  display: 'none'
+};
+
 export default class Skills extends Component {
 
   static propTypes = {
@@ -54,7 +58,8 @@ export default class Skills extends Component {
 
   toOuterSkills(skills) {
     return _.reduce(skills, (acc, skill) => {
-      acc[skill.name.trim()] = skill.value;
+      const name = (skill.name || '').trim();
+      if (name) acc[name] = skill.value;
       return acc;
     }, {});
   }
@@ -76,7 +81,7 @@ export default class Skills extends Component {
       const { name } = skill;
       const res = { ...skill };
       delete res.errorN;
-      const iName = name.trim().toLowerCase();
+      const iName = (name || '').trim().toLowerCase();
       if (!iName) {
         res.errorN = 'Empty Name';
       } else if (map[iName]) {
@@ -93,6 +98,13 @@ export default class Skills extends Component {
   deleteSkill(uid) {
     const { skills } = this.state;
     this.updateSkillsAndErrorState(_.filter(skills, (skill) => skill.uid !== uid));
+  }
+
+  addSkill() {
+    const uid = uidGen++;
+    const value = 1;
+    const skills = [{ uid, value }, ...this.state.skills];
+    this.setState({ skills });
   }
 
   render() {
@@ -139,6 +151,7 @@ export default class Skills extends Component {
       <div className="container form-inline">
         <div className="row">
           <EditToggle onToggleEditing={this.toggleEditing} editing={editing} disabled={hasErrors} />
+          <i onClick={this.addSkill} className="glyphicon glyphicon-plus" style={editing ? {} : invisible} />
         </div>
         {skls}
       </div>
