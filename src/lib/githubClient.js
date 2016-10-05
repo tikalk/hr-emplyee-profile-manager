@@ -1,162 +1,91 @@
-import https from 'https';
-import urlTools from 'url';
-import _ from 'lodash';
+import GitHub from 'github-api';
+import { repoFix } from './githubApiFix';
 
 export default class GithubClient {
   constructor(token) {
-    this.token = token;
-    this.hostName = 'api.github.com';
-    this.basePath = '/repos/tikalk/tikal_jekyll_website';
+    this.gh = new GitHub({ token: token.token });
+    this.repo = this.gh.getRepo('tikalk', 'tikal_jekyll_website');
+    repoFix(this.repo);
     this.branch = 'master';
     this.branch = 'profile_editor_test';
     this.userPath = '_data/users';
+    this.picturePath = '_assets/images';
   }
 
-  request(options_) {
-    const options = { ...options_, withCredentials: false, hostname: this.hostName };
-    return new Promise((resolve, reject) => {
-      const req = https.request(options, (res) => {
-        const dataBuffer = [];
-        res.on('data', (chunk) => {
-          dataBuffer.push(chunk);
-        });
-        res.on('end', () => {
-          if (res.statusCode < 200 || res.statusCode > 299) {
-            console.log('XHR failed:', res.statusMessage);
-            reject(res.statusMessage);
-            return;
-          }
-          resolve(JSON.parse(dataBuffer.join('')));
-        });
-      });
-      req.on('error', (e) => {
-        console.log('XHR failed:', e.message);
-        reject(e.message);
-      });
-      // if(options.withCredentials !== undefined) req.xhr.withCredentials = options.withCredentials;
-      // write data to request body
-      req.end(options.body);
-    });
+  getAuthenticated() {
+    return this.gh.getUser().getProfile();
   }
 
   loadUsers() {
-    const { basePath, userPath, branch, token, hostName } = this;
-    const options = {
-      hostname: hostName,
-      path: `${basePath}/contents/${userPath}?ref=${branch}`,
-      method: 'GET',
-      port: 443,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${token}`
-      }
-    };
-
-    return this.request(options);
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, userPath, false)
+      .then(({ data }) => {
+        return data
+          .filter((entry) => entry.name.endsWith('.yml') && entry.type === 'file')
+          .map((entry) => {
+            const { name } = entry;
+            const isEx = name.toLowerCase().endsWith('.ex.yml');
+            const user = name.substr(0, name.length - 4);
+            const display = user.toLowerCase().substr(0, user.length - (isEx ? 3 : 0));
+            return { user, isEx, display };
+          });
+      });
   }
 
-  loadUserYaml(url) {
-    return new Promise((resolve, reject) => {
-      const options = urlTools.parse(url);
-      options.withCredentials = false;
-      const req = https.get(options, (res) => {
-        const dataBuffer = [];
-        res.on('data', (chunk) => {
-          dataBuffer.push(chunk);
-        });
-        res.on('end', () => {
-          if (res.statusCode < 200 || res.statusCode > 299) {
-            console.log('XHR failed:', res.statusMessage);
-            reject(res.statusMessage);
-            return;
-          }
-          resolve(dataBuffer.join(''));
-        });
-      });
-      req.on('error', (e) => {
-        console.log('XHR failed:', e.message);
-        reject(e.message);
-      });
-    });
+  loadUserProfile(userName) {
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, `${userPath}/${userName}.yml`, true).then(({ data }) => data);
+  }
+
+  saveUserProfile(oldUserName, userName, yaml, message = `saved ${userName} profile`) {
+    const { userPath, branch } = this;
+    const src = `${userPath}/${oldUserName}.yml`;
+    const trg = `${userPath}/${userName}.yml`;
+    const needRename = oldUserName && oldUserName !== userName;
+    // rename if necessary and then write updated yaml
+    return (needRename ? this.repo.move(branch, src, trg) : Promise.resolve())
+      .then(() => this.repo.writeFile(branch, trg, yaml, message, {}));
   }
 
   loadTemplate() {
-    return this.loadUsers().then((users) => {
-      const { download_url } = _.find(users, { name: 'template.txt' });
-      return this.loadUserYaml(download_url);
-    });
+    const { userPath, branch } = this;
+    return this.repo.getContents(branch, `${userPath}/template.txt`, true).then(({ data }) => data);
   }
 
-  saveUserYaml(userName, yaml, message) {
-    return this.saveBlob(`${this.userPath}/${userName}.yml`, yaml, message || `saving ${userName} profile`);
+  static verifyImagePath(imagePath) {
+    if (!imagePath.startsWith('pictures/')) {
+      return Promise.reject('Wrong image name. Should begin with "pictures/..."');
+    }
+    return Promise.resolve();
   }
 
-  saveBlob(fullFileName, blob, message) {
-    const { basePath, branch, token, hostName } = this;
-    const options = {
-      hostname: hostName,
-      port: 443,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Basic ${token}`,
-        'User-Agent': 'Node'
-      }
-    };
+  saveUserPicture(imagePath, blob64) {
+    return GithubClient.verifyImagePath(imagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        return this.repo.writeFile(branch, `${picturePath}/${imagePath}`, blob64,
+          'image updated', { encode: false });
+      })
+      .then(() => true);
+  }
 
-    let SHA_LATEST_COMMIT;
-    let SHA_BASE_TREE;
-    let SHA_NEW_TREE;
-    let SHA_NEW_COMMIT;
+  loadUserPicture(imagePath) {
+    return GithubClient.verifyImagePath(imagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        return this.repo.getContents(branch, `${picturePath}/${imagePath}`, true);
+      })
+      .then(({ data: { content } }) => content);
+  }
 
-    options.path = `${basePath}/git/refs/heads/${branch}`;
-    options.method = 'GET';
-    return this.request(options)
-      .then((res) => {
-        SHA_LATEST_COMMIT = res.object.sha;
-        options.path = `${basePath}/git/commits/${SHA_LATEST_COMMIT}`;
-        options.method = 'GET';
-        return this.request(options);
-      })
-      .then((res) => {
-        SHA_BASE_TREE = res.tree.sha;
-        options.path = `${basePath}/git/trees`;
-        options.method = 'POST';
-        options.body = JSON.stringify({
-          base_tree: SHA_BASE_TREE,
-          tree: [
-            {
-              mode: '100644',
-              type: 'blob',
-              encoding: 'utf-8',
-              path: fullFileName,
-              content: blob
-            }
-          ]
-        });
-        return this.request(options);
-      })
-      .then((res) => {
-        SHA_NEW_TREE = res.sha;
-        options.path = `${basePath}/git/commits`;
-        options.method = 'POST';
-        options.body = JSON.stringify({
-          message: message || fullFileName,
-          parents: [
-            SHA_LATEST_COMMIT
-          ],
-          tree: SHA_NEW_TREE
-        });
-        return this.request(options);
-      })
-      .then((res) => {
-        SHA_NEW_COMMIT = res.sha;
-        options.path = `${basePath}/git/refs/heads/${branch}`;
-        options.method = 'POST';
-        options.body = JSON.stringify({
-          sha: SHA_NEW_COMMIT,
-          force: true
-        });
-        return this.request(options);
+  renameUserPicture(oldImagePath, newImagePath) {
+    return GithubClient.verifyImagePath(newImagePath)
+      .then(() => {
+        const { picturePath, branch } = this;
+        const src = `${picturePath}/${oldImagePath}`;
+        const trg = `${picturePath}/${newImagePath}`;
+        return this.repo.move(branch, src, trg,
+          `image renamed from ${oldImagePath} to ${newImagePath}`);
       })
       .then(() => true);
   }
