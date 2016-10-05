@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
 import _ from 'lodash';
 import EditToggle from './EditToggle';
@@ -20,17 +20,16 @@ export default class Skills extends Component {
 
   constructor(props) {
     super(props);
+    const state = this.parseSkillsErrorState(this.toInnerSkills(props.skills));
     this.state = {
-      editing: false,
-      skills: this.toInnerSkills(props.skills)
+      ...state,
+      editing: false
     };
     autoBind(this);
   }
 
   componentWillReceiveProps(props) {
-    this.setState({
-      skills: this.toInnerSkills(props.skills)
-    });
+    this.updateSkillsAndErrorState(this.toInnerSkills(props.skills));
   }
 
   toggleEditing() {
@@ -43,7 +42,6 @@ export default class Skills extends Component {
   }
 
   toInnerSkills(skills) {
-    // return _.toPairs(skills);
     return _.reduce(skills, (acc, value, name) => {
       acc.push({
         uid: uidGen++,
@@ -56,49 +54,45 @@ export default class Skills extends Component {
 
   toOuterSkills(skills) {
     return _.reduce(skills, (acc, skill) => {
-      acc[skill.name] = skill.value;
+      acc[skill.name.trim()] = skill.value;
       return acc;
     }, {});
   }
 
-  /*
-   updateSkill(key, evt) {
-   const { skills } = this.state;
-   skills[key] = evt.target.value;
-   this.setState({ skills });
-   }
-   */
-
   updateSkillName(uid, e) {
     const { skills } = this.state;
     _.find(skills, { uid }).name = e.target.value;
-    this.updateSkillNameErrors(skills);
+    this.updateSkillsAndErrorState(skills);
   }
 
-  updateSkillNameErrors(initialSkills) {
+  updateSkillsAndErrorState(initialSkills) {
+    this.setState(this.parseSkillsErrorState(initialSkills));
+  }
+
+  parseSkillsErrorState(initialSkills) {
     let hasErrors = false;
     const map = {};
     const skills = _.map(initialSkills, (skill) => {
       const { name } = skill;
       const res = { ...skill };
       delete res.errorN;
-      if (!name) {
-        hasErrors = true;
+      const iName = name.trim().toLowerCase();
+      if (!iName) {
         res.errorN = 'Empty Name';
-      } else if (map[name]) {
-        hasErrors = true;
-        map[name].errorN = res.errorN = 'Duplicated Name';
+      } else if (map[iName]) {
+        map[iName].errorN = res.errorN = 'Duplicated Name';
       } else {
-        map[name] = res;
+        map[iName] = res;
       }
+      hasErrors = hasErrors || !!res.errorN;
       return res;
     });
-    this.setState({ skills, hasErrors });
+    return { skills, hasErrors };
   }
 
   deleteSkill(uid) {
     const { skills } = this.state;
-    this.updateSkillNameErrors(_.filter(skills, (skill) => skill.uid !== uid));
+    this.updateSkillsAndErrorState(_.filter(skills, (skill) => skill.uid !== uid));
   }
 
   render() {
@@ -112,8 +106,7 @@ export default class Skills extends Component {
         </div>);
       }, []);
     } else {
-      skls = _.map(skills, (skill) => {
-        const { name, value, uid, errorN, errorV } = skill;
+      skls = _.map(skills, ({ name, value, uid, errorN, errorV }) => {
         return (<div key={uid} className="row">
           <i onClick={() => this.deleteSkill(uid)} className="glyphicon glyphicon-remove " />
           <input
@@ -135,7 +128,7 @@ export default class Skills extends Component {
             className="form-control"
             defaultValue={value}
             onChange={(e) => {
-              skill[1] = e.target.value;
+              _.find(skills, { uid }).value = e.target.value;
             }}
           />
         </div>);
@@ -145,7 +138,7 @@ export default class Skills extends Component {
     return (
       <div className="container form-inline">
         <div className="row">
-          <EditToggle onToggleEditing={this.toggleEditing} editing={editing} disabled={hasErrors}/>
+          <EditToggle onToggleEditing={this.toggleEditing} editing={editing} disabled={hasErrors} />
         </div>
         {skls}
       </div>
