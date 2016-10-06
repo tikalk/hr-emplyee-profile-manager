@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactMarkdown from 'react-markdown';
 import autoBind from 'react-autobind';
+import EditToggle from './EditToggle';
 
 export default class ExperienceYaml extends Component {
 
@@ -64,15 +65,9 @@ export default class ExperienceYaml extends Component {
     return (
       <div className="experience container">
         <div className="row">
-          {editing ?
-            <span className="col-md-1">
-              <i onClick={this.toggleEditing} className="glyphicon glyphicon-floppy-save" />
-            </span>
-            :
-            <span className="col-md-1">
-              <i onClick={this.toggleEditing} className="glyphicon glyphicon-edit" />
-            </span>
-          }
+          <span className="col-md-1">
+            <EditToggle onToggleEditing={this.toggleEditing} editing={editing} />
+          </span>
           <span className="col-md-2">years</span>
           <span className="col-md-9">
             {editing ?

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
 import PhotoEditor from './PhotoEditor';
+import EditToggle from './EditToggle';
 
 
 export default class MetaData extends Component {
@@ -86,7 +87,7 @@ export default class MetaData extends Component {
       followMe = followMeUrls.map((url, i) => {
         return (
           <div key={i}>
-            <a target="_blank" href={url}>{url}</a>
+            <a target="_blank" rel="noopener noreferrer" href={url}>{url}</a>
           </div>
         );
       });
@@ -105,15 +106,9 @@ export default class MetaData extends Component {
 
     return (
       <div className="container">
-        {editing ?
-          <div className="row">
-            <i onClick={this.toggleEditing} className="glyphicon glyphicon-floppy-save" />
-          </div>
-          :
-          <div className="row">
-            <i onClick={this.toggleEditing} className="glyphicon glyphicon-edit" />
-          </div>
-        }
+        <div className="row">
+          <EditToggle onToggleEditing={this.toggleEditing} editing={editing} />
+        </div>
         <div className="row">
           <div className="col-md-2">ID:</div>
           <div className="col-md-10">
