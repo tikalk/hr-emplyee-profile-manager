@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import ReactMarkdown from 'react-markdown';
 import autoBind from 'react-autobind';
+import EditToggle from './EditToggle';
 
 export default class ExperienceYaml extends Component {
 

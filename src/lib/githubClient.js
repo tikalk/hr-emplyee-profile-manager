@@ -10,6 +10,7 @@ export default class GithubClient {
     this.branch = 'change-image-file';
     // this.branch = 'profile_editor_test';
     this.userPath = '_data/users';
+    this.picturePath = '_assets/images';
   }
 
   getAuthenticated() {
