@@ -2,6 +2,9 @@
 	padding: 20px;
 }
 
+a {
+  cursor: pointer;
+}
 /*.profile{*/
 	/*margin: 30px 20px;*/
 /*}*/
@@ -117,4 +120,22 @@ main {
 i.glyphicon {
 	font-size: 20px;
 	padding: 5px;
+}
+
+.searchWrapper {
+  padding: 0px 10px;
+}
+.searchWrapper input {
+  margin: 0px;
+}
+
+.skills input {
+  text-align: center;
+}
+
+.green-color {
+  color: #4caf50;
+}
+.grey-color {
+  color: #9e9e9e;
 }

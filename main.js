@@ -1,18 +1,22 @@
 const { app, BrowserWindow } = require('electron');
 
 app.on('window-all-closed', function () {
-  if (process.platform != 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 let win;
 function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1360, height: 800 });
+  win = new BrowserWindow({
+    width: 1360,
+    height: 800,
+    icon: `${__dirname}/icon.png`
+  });
   win.loadURL(`file://${__dirname}/src/index.html`);
 
   // Open the DevTools.
-  win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   // Emitted when the window is closed.
   win.on('closed', () => {

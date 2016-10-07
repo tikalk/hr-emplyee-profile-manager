@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import cloudinary from 'cloudinary';
 import jsYaml from 'js-yaml';
 import autoBind from 'react-autobind';
+import cloneDeep from 'lodash/cloneDeep';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
@@ -94,7 +95,7 @@ export default class App extends Component {
 
   saveUser(oldName, name, yaml) {
     return githubClient.saveUserProfile(oldName, name, yaml).then(() => {
-      console.log(`user ${name} saved`);
+      // console.log(`user ${name} saved`);
       this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name });
       // reload users to update links after commit
       this.loadUsers();
@@ -103,7 +104,7 @@ export default class App extends Component {
 
   loadUser(userInfo) {
     const { user } = userInfo;
-    console.log('user', user);
+    // console.log('user', user);
     return githubClient.loadUserProfile(user).then((userYaml) => {
       this.setState({ userYaml: jsYaml.safeLoad(userYaml), user });
       return user;
@@ -126,8 +127,20 @@ export default class App extends Component {
         }
         return 0;
       });
-      this.setState({ users });
+      this.setState({ users, originalList: cloneDeep(users) });
     });
+  }
+
+  filterProfiles(e) {
+    const { originalList } = this.state;
+    let newList;
+    const txt = e.target.value;
+    if (txt === '') {
+      newList = cloneDeep(originalList);
+    } else {
+      newList = originalList.filter(u => u.display.toLowerCase().indexOf(txt.toLowerCase()) !== -1);
+    }
+    this.setState({ users: newList });
   }
 
   render() {
@@ -143,7 +156,12 @@ export default class App extends Component {
               <div>
                 <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png" alt="Tikal" />
               </div>
-              <ProfilesList users={users} loadUser={this.loadUser}/>
+              <ProfilesList
+                users={users}
+                loadUser={this.loadUser}
+                filterProfiles={this.filterProfiles}
+                createUser={this.createUser}
+              />
             </div>
             <main>
               <YamlEditor

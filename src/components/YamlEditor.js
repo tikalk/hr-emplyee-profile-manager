@@ -2,10 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import jsYaml from 'js-yaml';
 import _ from 'lodash';
 import autoBind from 'react-autobind';
-import classNames from 'classnames';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
+import NewSkill from './NewSkill';
+
 const history = [];
 
 export default class YamlEditor extends Component {
@@ -24,7 +25,7 @@ export default class YamlEditor extends Component {
     super(props);
     autoBind(this);
     this.state = {
-      yamlData: props.yamlData,
+      yamlData: _.cloneDeep(props.yamlData || {}),
       editing: false,
       newUser: false
     };
@@ -32,58 +33,41 @@ export default class YamlEditor extends Component {
 
   componentWillReceiveProps(props) {
     this.setState({
-      yamlData: props.yamlData || {},
+      yamlData: _.cloneDeep(props.yamlData || {}),
       editing: false
     });
   }
 
-  onSaveExperience(id, data) {
+  onValueChange(path, key, value) {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
-    yamlData.experience[id] = data;
-    this.setState({ yamlData });
-  }
-
-  onSaveSkills(type, skills) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    yamlData.skills[type] = skills;
-    this.setState({ yamlData });
-  }
-
-  onSaveMetaData(metadata) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    _.merge(yamlData, metadata);
-    this.setState({ yamlData });
-  }
-
-  onEditingChanged(itemEditing) {
-    let { editingCount } = this.state;
-    editingCount += itemEditing ? 1 : -1;
-    this.setState({ editingCount });
-  }
-
-  undo() {
-    const yamlData = history.pop();
-    if (yamlData) {
-      this.setState({ yamlData });
+    if (!path || path.length === 0) {
+      yamlData[key] = value;
+    } else {
+      let obj = yamlData;
+      for (let i = 0; i < path.length; i++) {
+        if (i < path.length - 1) {
+          obj = obj[path[i]];
+        } else {
+          obj[path[i]][key] = value;
+        }
+      }
     }
+    this.setState({ yamlData, isDirty: true });
   }
 
-  startEditing() {
-    this.setState({ editing: true });
-  }
-
-  cancelEditing() {
-    this.setState({ yamlData: this.props.yamlData, editing: false });
-  }
-
-  toggelEx() {
+  onSkillRemove(type, skill) {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
-    yamlData.ex = !yamlData.ex;
-    this.setState({ yamlData });
+    delete yamlData.skills[type][skill];
+    this.setState({ yamlData, isDirty: true });
+  }
+
+  onSkillAdd(type, skill) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.skills[type][skill] = 0;
+    this.setState({ yamlData, isDirty: true });
   }
 
   save() {
@@ -96,40 +80,40 @@ export default class YamlEditor extends Component {
     });
   }
 
-  createUser() {
-    return this.props.createUser().then(() => {
-      history.length = 0;
-      this.setState({ newUser: true, editing: true });
-    });
-  }
-
-  onValueChange(path, key, value) {
+  toggelEx() {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
-    if (!path || path.length === 0) {
-      yamlData[key] = value;
-    } else {
-      let obj = yamlData;
-      for (let i = 0 ; i < path.length; i++) {
-        if (i < path.length - 1) {
-          obj = obj[path[i]];
-        } else {
-          obj[path[i]][key] = value;
-        }
-      }
-    }
+    yamlData.ex = !yamlData.ex;
     this.setState({ yamlData });
+  }
+
+  cancelEditing() {
+    let confirmed = true;
+    if (this.state.isDirty) {
+      confirmed = confirm('Are you sure? You will lose your changes'); // eslint-disable-line
+    }
+    if (confirmed) {
+      this.setState({ yamlData: _.cloneDeep(this.props.yamlData), editing: false });
+    }
+  }
+
+  startEditing() {
+    this.setState({ editing: true });
+  }
+
+  undo() {
+    const yamlData = history.pop();
+    if (yamlData) {
+      this.setState({ yamlData });
+    } else {
+      this.setState({ isDirty: false });
+    }
   }
 
   render() {
     const { uploader } = this.props;
-    const { yamlData, editing, newUser } = this.state;
-    // const { users } = this.props;
-    const { id, about, login, ex, description } = yamlData || {};
-
-    // const exBtnClasses = classNames('btn', { 'btn-primary': !ex, 'btn-default': ex });
-    // const active = ex ? 'Ex-Employee' : 'Active';
-    // const canPublish = editingCount === 0 && yamlData && ((!newUser && history.length) || (newUser && login));
+    const { yamlData, editing } = this.state;
+    const { ex, description } = yamlData || {};
 
     if (_.isEmpty(yamlData)) {
       return <div />;
@@ -151,7 +135,6 @@ export default class YamlEditor extends Component {
               {editing && <li><a onClick={this.cancelEditing}><i className="material-icons">cancel</i></a></li>}
               <li><a onClick={this.save}>Publish</a></li>
               <li><a onClick={this.undo} disabled={!history.length}>Undo</a></li>
-              <li><a onClick={this.createUser}>New Profile</a></li>
             </ul>
           </div>
         </nav>
@@ -193,18 +176,32 @@ export default class YamlEditor extends Component {
                 <div className="col s6">
                   <h5>Developer Skills</h5>
                   <Skills
-                    skills={yamlData.skills.developer_skills}
+                    skills={yamlData.skills.developer_skills || {}}
                     onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
+                    onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
                     editing={editing}
                   />
+                  {editing &&
+                    <NewSkill
+                      skills={Object.keys(yamlData.skills.developer_skills || {})}
+                      onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
+                    />
+                  }
                 </div>
                 <div className="col s6">
                   <h5>Expert skills</h5>
                   <Skills
-                    skills={yamlData.skills.expert_skills}
+                    skills={yamlData.skills.expert_skills || {}}
                     onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
+                    onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
                     editing={editing}
                   />
+                  {editing &&
+                    <NewSkill
+                      skills={Object.keys(yamlData.skills.expert_skills || {})}
+                      onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
+                    />
+                  }
                 </div>
               </div>
             }

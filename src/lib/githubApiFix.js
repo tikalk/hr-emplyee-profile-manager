@@ -13,7 +13,7 @@ function repoMove(branch, oldPath, newPath, cb) {
           entry.path = newPath;
         }
         return entry;
-      }).filter((ref) => ref.type !== 'tree' || !oldPath.startsWith(ref.path));
+      }).filter(ref => ref.type !== 'tree' || !oldPath.startsWith(ref.path));
       return this.createTree(newTree);
     })
     .then(({ data: tree }) => this.commit(oldSha, tree.sha, `Renamed '${oldPath}' to '${newPath}'`))

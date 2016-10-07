@@ -29,7 +29,7 @@
     }],
     "react/jsx-space-before-closing": [1, "always"],
     "jsx-a11y/no-static-element-interactions": 0,
-    "jsx-a11y/lable-has-for": 0,
+    "jsx-a11y/label-has-for": 0,
     "linebreak-style": 0,
     "arrow-body-style": [0, "as-needed"],
     "no-plusplus": [1, { "allowForLoopAfterthoughts": true }]

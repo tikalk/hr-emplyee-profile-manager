@@ -22,7 +22,6 @@ export default class MetaData extends Component {
     // upload to cloudinary
     uploader.upload(path,
       (result) => {
-        console.log(result)
         this.handleChange('image_path', result.url);
       },
       {
@@ -153,7 +152,7 @@ export default class MetaData extends Component {
             </div>
             <div className="row">
               <div className="col s2">Follow Me:</div>
-              <div className="col s10" style={{overflow: 'hidden'}}>{followMe}</div>
+              <div className="col s10" style={{ overflow: 'hidden' }}>{followMe}</div>
             </div>
           </div>
           <div className="col s4">
@@ -171,7 +170,7 @@ export default class MetaData extends Component {
                 }
                 {imagePath ?
                   <div className="photo-wrapper">
-                    <img role="presentation" className="photo" src={imagePath}/>
+                    <img role="presentation" className="photo" src={imagePath} />
                   </div>
                   :
                   null

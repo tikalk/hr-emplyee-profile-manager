@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactMarkdown from 'react-markdown';
 import autoBind from 'react-autobind';
-import EditToggle from './EditToggle';
 
 export default class ExperienceYaml extends Component {
 
@@ -38,8 +37,6 @@ export default class ExperienceYaml extends Component {
     this.props.onChange('description', e.target.value);
   }
 
-
-
   render() {
     const { title, description, years, editing } = this.props;
 
@@ -58,11 +55,11 @@ export default class ExperienceYaml extends Component {
         <div className="row">
           <span className="col s2 col-md-offset-1">title</span>
           <span className="col s10">
-          {editing ?
-            <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
-            :
-            <span>{title}</span>
-          }
+            {editing ?
+              <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
+              :
+              <span>{title}</span>
+            }
           </span>
         </div>
         <div className="row">
