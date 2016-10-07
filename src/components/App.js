@@ -23,25 +23,11 @@ export default class App extends Component {
       auth = undefined;
     }
     const state = {};
-    const cloud = localStorage.getItem(cloudStorage);
-    if (cloud) {
-      const obj = JSON.parse(cloud);
-      if (obj.cloudinaryAPIKey && obj.cloudinarySecret) {
-        cloudinary.config({
-          cloud_name: 'ds7ihqtdu',
-          api_key: obj.cloudinaryAPIKey,
-          api_secret: obj.cloudinarySecret
-        });
-        this.uploader = cloudinary.uploader;
-        state.cloudStorage = {
-          api_key: obj.cloudinaryAPIKey,
-          api_secret: obj.cloudinarySecret
-        };
-      }
-    }
+
     state.auth = auth;
     this.state = state;
     autoBind(this);
+    this.loadCloudStorage();
   }
 
   componentDidMount() {
@@ -68,6 +54,22 @@ export default class App extends Component {
       this.loadUsers();
     });
     localStorage.setItem(cloudStorage, JSON.stringify(cStorage));
+    this.loadCloudStorage();
+  }
+
+  loadCloudStorage() {
+    const cloud = localStorage.getItem(cloudStorage);
+    if (cloud) {
+      const obj = JSON.parse(cloud);
+      if (obj.cloudinaryAPIKey && obj.cloudinarySecret) {
+        cloudinary.config({
+          cloud_name: 'ds7ihqtdu',
+          api_key: obj.cloudinaryAPIKey,
+          api_secret: obj.cloudinarySecret
+        });
+        this.uploader = cloudinary.uploader;
+      }
+    }
   }
 
   authenticate(auth) {

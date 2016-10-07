@@ -8,7 +8,7 @@ export default class MetaData extends Component {
     yamlData: PropTypes.object,
     onChange: PropTypes.func,
     editing: PropTypes.bool,
-    uploader: PropTypes.func
+    uploader: PropTypes.object
   };
 
   constructor(props) {

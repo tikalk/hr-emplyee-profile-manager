@@ -17,7 +17,7 @@ export default class YamlEditor extends Component {
     saveUser: PropTypes.func,
     loadUser: PropTypes.func,
     createUser: PropTypes.func,
-    uploader: PropTypes.func
+    uploader: PropTypes.object
   };
 
   constructor(props) {
