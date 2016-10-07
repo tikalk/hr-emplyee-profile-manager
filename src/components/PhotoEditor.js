@@ -6,7 +6,6 @@ import { get } from 'lodash';
 
 export default class PhotoEditor extends Component {
   static propTypes = {
-    saveMetaData: PropTypes.func,
     id: PropTypes.number,
     image_path: PropTypes.string
   };
@@ -46,14 +45,9 @@ export default class PhotoEditor extends Component {
   render() {
     const { imagePath, editing } = this.state;
     return (
-      <div className="container">
+      <div className="row">
         <div className="photo-container">
-          <div className="title"><h2>Profile picture information</h2></div>
-          {editing ?
-            <div><i onClick={this.toggleEditing} className="glyphicon glyphicon-floppy-save"/></div>
-            :
-            <div><i onClick={this.toggleEditing} className="glyphicon glyphicon-edit"/></div>
-          }
+          <div className="title">Profile picture information</div>
           {
             editing ? <div>
               <div className="upload">

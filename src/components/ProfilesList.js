@@ -5,16 +5,11 @@ export default function ProfilesList(props) {
   const exStyle = {
     color: 'gray'
   };
+
   return (
-    <div className="btn-group">
-      <button
-        type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false"
-      >
-        Choose Profile <span className="caret" />
-      </button>
-      <ul className="dropdown-menu">
-        {(users || []).map((user) => (<li key={user.user}>
+    <div className="profiles-list" style={{ maxHeight: '800px' }}>
+      <ul>
+        {(users || []).filter(u => !!u.user).map(user => (<li key={user.user}>
           <a
             onClick={loadUser.bind(null, user)}
             style={user.isEx ? exStyle : {}}

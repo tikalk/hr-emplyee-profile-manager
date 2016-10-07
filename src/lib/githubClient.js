@@ -6,10 +6,10 @@ export default class GithubClient {
     this.gh = new GitHub({ token: token.token });
     this.repo = this.gh.getRepo('tikalk', 'tikal_jekyll_website');
     repoFix(this.repo);
-    this.branch = 'master';
-    this.branch = 'profile_editor_test';
+    // this.branch = 'master';
+    this.branch = 'change-image-file';
+    // this.branch = 'profile_editor_test';
     this.userPath = '_data/users';
-    this.picturePath = '_assets/images';
   }
 
   getAuthenticated() {
@@ -21,7 +21,7 @@ export default class GithubClient {
     return this.repo.getContents(branch, userPath, false)
       .then(({ data }) => {
         return data
-          .filter((entry) => entry.name.endsWith('.yml') && entry.type === 'file')
+          .filter(entry => entry.name.endsWith('.yml') && entry.type === 'file')
           .map((entry) => {
             const { name } = entry;
             const isEx = name.toLowerCase().endsWith('.ex.yml');
@@ -59,34 +59,34 @@ export default class GithubClient {
     return Promise.resolve();
   }
 
-  saveUserPicture(imagePath, blob64) {
-    return GithubClient.verifyImagePath(imagePath)
-      .then(() => {
-        const { picturePath, branch } = this;
-        return this.repo.writeFile(branch, `${picturePath}/${imagePath}`, blob64,
-          'image updated', { encode: false });
-      })
-      .then(() => true);
-  }
-
-  loadUserPicture(imagePath) {
-    return GithubClient.verifyImagePath(imagePath)
-      .then(() => {
-        const { picturePath, branch } = this;
-        return this.repo.getContents(branch, `${picturePath}/${imagePath}`, true);
-      })
-      .then(({ data: { content } }) => content);
-  }
-
-  renameUserPicture(oldImagePath, newImagePath) {
-    return GithubClient.verifyImagePath(newImagePath)
-      .then(() => {
-        const { picturePath, branch } = this;
-        const src = `${picturePath}/${oldImagePath}`;
-        const trg = `${picturePath}/${newImagePath}`;
-        return this.repo.move(branch, src, trg,
-          `image renamed from ${oldImagePath} to ${newImagePath}`);
-      })
-      .then(() => true);
-  }
+  // saveUserPicture(imagePath, blob64) {
+  //   return GithubClient.verifyImagePath(imagePath)
+  //     .then(() => {
+  //       const { picturePath, branch } = this;
+  //       return this.repo.writeFile(branch, `${picturePath}/${imagePath}`, blob64,
+  //         'image updated', { encode: false });
+  //     })
+  //     .then(() => true);
+  // }
+  //
+  // loadUserPicture(imagePath) {
+  //   return GithubClient.verifyImagePath(imagePath)
+  //     .then(() => {
+  //       const { picturePath, branch } = this;
+  //       return this.repo.getContents(branch, `${picturePath}/${imagePath}`, true);
+  //     })
+  //     .then(({ data: { content } }) => content);
+  // }
+  //
+  // renameUserPicture(oldImagePath, newImagePath) {
+  //   return GithubClient.verifyImagePath(newImagePath)
+  //     .then(() => {
+  //       const { picturePath, branch } = this;
+  //       const src = `${picturePath}/${oldImagePath}`;
+  //       const trg = `${picturePath}/${newImagePath}`;
+  //       return this.repo.move(branch, src, trg,
+  //         `image renamed from ${oldImagePath} to ${newImagePath}`);
+  //     })
+  //     .then(() => true);
+  // }
 }

@@ -1,28 +1,46 @@
 import React, { Component } from 'react';
+import cloudinary from 'cloudinary';
 import jsYaml from 'js-yaml';
 import autoBind from 'react-autobind';
 import GithubLogin from './GithubLogin';
 import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
+import ProfilesList from './ProfilesList';
 
 let githubClient;
 const storageAuthKey = 'currentAuth';
+const cloudStorage = 'cloudStorage';
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     let auth;
-    try {
-      auth = localStorage.getItem(storageAuthKey);
-      if (auth) auth = JSON.parse(auth);
-      if (auth && !auth.token) auth = undefined;
-    } catch (ex) {
-      console.error(ex);
+    auth = localStorage.getItem(storageAuthKey);
+    if (auth) {
+      auth = JSON.parse(auth);
     }
-
-    this.state = {
-      auth
-    };
+    if (auth && !auth.token) {
+      auth = undefined;
+    }
+    const state = {};
+    const cloud = localStorage.getItem(cloudStorage);
+    if (cloud) {
+      const obj = JSON.parse(cloud);
+      if (obj.cloudinaryAPIKey && obj.cloudinarySecret) {
+        cloudinary.config({
+          cloud_name: 'ds7ihqtdu',
+          api_key: obj.cloudinaryAPIKey,
+          api_secret: obj.cloudinarySecret
+        });
+        this.uploader = cloudinary.uploader;
+        state.cloudStorage = {
+          api_key: obj.cloudinaryAPIKey,
+          api_secret: obj.cloudinarySecret
+        };
+      }
+    }
+    state.auth = auth;
+    this.state = state;
     autoBind(this);
   }
 
@@ -31,13 +49,25 @@ export default class App extends Component {
     this.authenticate(auth).then(() => this.loadUsers());
   }
 
-  setApiToken(auth) {
-    if (!auth.token) return;
+  setApiTokens(tokens) {
+    const auth = {
+      token: tokens.token,
+      user: tokens.user
+    };
+    const cStorage = {
+      cloudinaryAPIKey: tokens.cloudinaryAPIKey,
+      cloudinarySecret: tokens.cloudinarySecret
+    };
+
+    if (!auth.token) {
+      return;
+    }
 
     this.authenticate(auth).then(() => {
       localStorage.setItem(storageAuthKey, JSON.stringify(auth));
       this.loadUsers();
     });
+    localStorage.setItem(cloudStorage, JSON.stringify(cStorage));
   }
 
   authenticate(auth) {
@@ -101,17 +131,31 @@ export default class App extends Component {
   render() {
     const { auth, users, userYaml, user } = this.state;
 
+    const showLoginPage = !auth || !this.uploader;
     return (
-      <div className="container app">
-        {!auth && <GithubLogin setApiToken={this.setApiToken} />}
-        {auth && <YamlEditor
-          users={users}
-          user={user}
-          yamlData={userYaml}
-          loadUser={this.loadUser}
-          saveUser={this.saveUser}
-          createUser={this.createUser}
-        />}
+      <div className="app">
+        {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}
+        {!showLoginPage &&
+          <div>
+            <div className="side-nav fixed">
+              <div>
+                <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png" alt="Tikal" />
+              </div>
+              <ProfilesList users={users} loadUser={this.loadUser}/>
+            </div>
+            <main>
+              <YamlEditor
+                users={users}
+                user={user}
+                yamlData={userYaml}
+                loadUser={this.loadUser}
+                saveUser={this.saveUser}
+                createUser={this.createUser}
+                uploader={this.uploader}
+              />
+            </main>
+          </div>
+        }
       </div>
     );
   }

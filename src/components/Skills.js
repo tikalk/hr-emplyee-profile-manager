@@ -7,61 +7,36 @@ export default class Skills extends Component {
 
   static propTypes = {
     skills: PropTypes.object,
-    saveSkills: PropTypes.func,
-    editingChanged: PropTypes.func
+    onChange: PropTypes.func,
+    editing: PropTypes.bool
   };
 
   constructor(props) {
     super(props);
-    this.state = {
-      editing: false,
-      skills: props.skills
-    };
     autoBind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      skills: props.skills
-    });
-  }
-
-  toggleEditing() {
-    const { editing, skills } = this.state;
-    if (editing) {
-      this.props.saveSkills(skills);
-    }
-    this.props.editingChanged(!this.state.editing);
-    this.setState({ editing: !this.state.editing });
-  }
-
   updateSkill(key, evt) {
-    const { skills } = this.state;
-    skills[key] = evt.target.value;
-    this.setState({ skills });
+    const { onChange } = this.props;
+    onChange(key, evt.target.value)
   }
 
   render() {
-    const { editing } = this.state;
-    const { skills } = this.props;
+    const { skills, editing } = this.props;
     let skls;
-    const btnClasses = classNames('glyphicon', {
-      'glyphicon-floppy-save': editing,
-      'glyphicon-edit': !editing
-    });
     if (!editing) {
       skls = _.reduce(skills, (result, value, key) => {
         result.push(<div key={key} className="row">
-          <span className="col-md-2">{key}:</span>
-          <span className="col-md-9">{value}</span>
+          <span className="col s6">{key}:</span>
+          <span className="col s6">{value}</span>
         </div>);
         return result;
       }, []);
     } else {
       skls = _.reduce(skills, (result, value, key) => {
         result.push(<div key={key} className="row">
-          <span className="col-md-2">{key}:</span>
-          <span className="col-md-9">
+          <span className="col s6">{key}:</span>
+          <span className="col s6">
             <input
               type="number"
               maxLength="2"
@@ -76,10 +51,7 @@ export default class Skills extends Component {
     }
 
     return (
-      <div className="container form-inline">
-        <div className="row" >
-          <div className={btnClasses} onClick={this.toggleEditing} />
-        </div>
+      <div className="form-inline">
         {skls}
       </div>
     );
