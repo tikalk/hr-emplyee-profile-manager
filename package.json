@@ -13,6 +13,7 @@
     "lint": "./node_modules/.bin/eslint src"
   },
   "devDependencies": {
+    "babel-core": "^6.17.0",
     "babel-eslint": "^7.0.0",
     "babel-loader": "^6.2.0",
     "babel-plugin-add-module-exports": "^0.2.1",
