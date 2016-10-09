@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from 'react';
 export default class ProfilesList extends Component {
 
   format(text) {
-    const selected = this.seatchVal.value;
+    const selected = this.seatchVal ? this.seatchVal.value : null;
     if (!selected) {
       return text;
     }
