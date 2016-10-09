@@ -8,6 +8,9 @@ import YamlEditor from './YamlEditor';
 import GithubClient from '../lib/githubClient';
 import ProfilesList from './ProfilesList';
 
+// eslint-disable-next-line
+const logoUrl = require('file!img!../css/pictures/tikal-logo.png');
+
 let githubClient;
 const storageAuthKey = 'currentAuth';
 const cloudStorage = 'cloudStorage';
@@ -152,9 +155,9 @@ export default class App extends Component {
         {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}
         {!showLoginPage &&
           <div>
-            <div className="side-nav fixed">
+            <div className="side-nav fixed ">
               <div>
-                <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png" alt="Tikal" />
+                <img className="tikal-logo" src={logoUrl} alt="Tikal" />
               </div>
               <ProfilesList
                 users={users}

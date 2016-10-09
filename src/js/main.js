@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../css/app.css';
+import '../css/flexbox.css';
 import App from '../components/App';
 
 global.jQuery = require('jquery');
