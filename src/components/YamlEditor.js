@@ -6,6 +6,7 @@ import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
 import NewSkill from './NewSkill';
+import NewExperience from './NewExperience';
 
 const history = [];
 
@@ -70,6 +71,13 @@ export default class YamlEditor extends Component {
     this.setState({ yamlData, isDirty: true });
   }
 
+  onExperienceAdd(exp) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.experience = [exp, ...(yamlData.experience || [])];
+    this.setState({ yamlData, isDirty: true });
+  }
+
   save() {
     const { user, saveUser } = this.props;
     const { yamlData } = this.state;
@@ -121,7 +129,7 @@ export default class YamlEditor extends Component {
     const experienceItems = (yamlData.experience || []).map((exp, i) =>
       <ExperienceYaml
         key={i}
-        onChange={this.onValueChange.bind(this, ['experience'])}
+        onChange={this.onValueChange.bind(this, ['experience', i])}
         editing={editing}
         {...exp}
       />
@@ -131,8 +139,16 @@ export default class YamlEditor extends Component {
         <nav className="top-nav">
           <div className="nav-wrapper">
             <ul className="right">
-              {!editing && <li><a onClick={this.startEditing}><i className="material-icons">edit</i></a></li>}
-              {editing && <li><a onClick={this.cancelEditing}><i className="material-icons">cancel</i></a></li>}
+              {
+                !editing && <li>
+                  <a onClick={this.startEditing}><i className="material-icons">edit</i></a>
+                </li>
+              }
+              {
+                editing && <li>
+                  <a onClick={this.cancelEditing}><i className="material-icons">cancel</i></a>
+                </li>
+              }
               <li><a onClick={this.save}>Publish</a></li>
               <li><a onClick={this.undo} disabled={!history.length}>Undo</a></li>
             </ul>
@@ -165,14 +181,19 @@ export default class YamlEditor extends Component {
           />
           <div className="card-panel">
             <h4>Experience</h4>
+            {
+              editing && <NewExperience
+                onAdd={this.onExperienceAdd}
+              />
+            }
             <div className="section">
               {experienceItems}
             </div>
           </div>
           <div className="card-panel">
             <h4>Skills</h4>
-            {yamlData.skills &&
-              <div className="row">
+            {
+              yamlData.skills && <div className="row">
                 <div className="col s6">
                   <h5>Developer Skills</h5>
                   <Skills
@@ -181,8 +202,8 @@ export default class YamlEditor extends Component {
                     onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
                     editing={editing}
                   />
-                  {editing &&
-                    <NewSkill
+                  {
+                    editing && <NewSkill
                       skills={Object.keys(yamlData.skills.developer_skills || {})}
                       onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
                     />
@@ -196,8 +217,8 @@ export default class YamlEditor extends Component {
                     onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
                     editing={editing}
                   />
-                  {editing &&
-                    <NewSkill
+                  {
+                    editing && <NewSkill
                       skills={Object.keys(yamlData.skills.expert_skills || {})}
                       onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
                     />

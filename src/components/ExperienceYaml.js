@@ -17,14 +17,6 @@ export default class ExperienceYaml extends Component {
     autoBind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      years: props.years,
-      title: props.title,
-      description: props.description
-    });
-  }
-
   updateYears(e) {
     this.props.onChange('years', e.target.value);
   }
@@ -42,34 +34,35 @@ export default class ExperienceYaml extends Component {
 
     return (
       <div className="experience">
+        <hr />
         <div className="row">
-          <span className="col s2">years</span>
+          <span className="col s2">Years</span>
           <span className="col s10">
             {editing ?
-              <input className="form-control" defaultValue={years} onChange={this.updateYears} />
+              <input className="form-control" value={years} onChange={this.updateYears} />
               :
               <span>{years}</span>
             }
           </span>
         </div>
         <div className="row">
-          <span className="col s2 col-md-offset-1">title</span>
+          <span className="col s2 col-md-offset-1">Title</span>
           <span className="col s10">
             {editing ?
-              <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
+              <input className="form-control" value={title} onChange={this.updateTitle} />
               :
               <span>{title}</span>
             }
           </span>
         </div>
         <div className="row">
-          <span className="col s2 col-md-offset-1">description</span>
+          <span className="col s2 col-md-offset-1">Description</span>
           <span className="col s10">
             {editing ?
               <textarea
                 className="materialize-textarea"
                 onChange={this.updateDesc}
-                defaultValue={description}
+                value={description}
               />
               :
               <span>
@@ -78,7 +71,6 @@ export default class ExperienceYaml extends Component {
             }
           </span>
         </div>
-        <hr />
       </div>
     );
   }
