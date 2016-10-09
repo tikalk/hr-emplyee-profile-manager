@@ -18,11 +18,12 @@ export default class MetaData extends Component {
 
   onDrop(files) {
     const { uploader } = this.props;
-    const { path, name } = files[0].path;
-    // upload to cloudinary
+    const { path, name } = files[0];
+    // upload to cloudinarys
     uploader.upload(path,
       (result) => {
-        this.handleChange('image_path', result.url);
+        const { onChange } = this.props;
+        onChange('image_path', result.url);
       },
       {
         public_id: `site/pictures/${name}`,
