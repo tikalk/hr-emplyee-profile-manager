@@ -44,7 +44,7 @@ export default class ExperienceYaml extends Component {
               </a>
             </div>
           }
-          <div className="col s11">
+          <div className={`col ${editing ? 's11' : 's12'}`}>
             <div className="row">
               <span className="col s2">Years</span>
               <span className="col s10">
