@@ -90,9 +90,9 @@ export default class App extends Component {
   }
 
   createUser() {
-    return githubClient.loadTemplate().then((yamlTemplate) => {
-      this.setState({ userYaml: jsYaml.safeLoad(yamlTemplate), user: '' });
-      return '';
+    githubClient.loadTemplate().then((yamlTemplate) => {
+      const userYaml = jsYaml.safeLoad(yamlTemplate);
+      this.setState({ userYaml, user: '' });
     });
   }
 

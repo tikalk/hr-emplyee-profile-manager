@@ -56,6 +56,7 @@ export default class GithubClient {
         return !testExistence ? true :
           this.repo.getSha(branch, trg)
             .then(() => {
+              // eslint-disable-next-line
               const confirmed = confirm(`Profile named "${userName}" already exists. Do you want to overwrite it?`);
               return confirmed ? true : Promise.reject('Rejected by user');
             }, () => Promise.resolve()); // file not exists - continue saving

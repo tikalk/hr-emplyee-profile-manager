@@ -63,7 +63,7 @@ export default class MetaData extends Component {
         return (
           <div key={i}>
             <input
-              className="form-control" value={url}
+              className="form-control" value={url || ''}
               onChange={this.handleChange.bind(this, `url: ${i}`)}
             />
           </div>
@@ -80,7 +80,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={id}
+                    className="form-control" value={id || 0}
                     onChange={this.handleChange.bind(this, 'id')}
                   />
                   :
@@ -93,7 +93,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={firstName}
+                    className="form-control" value={firstName || ''}
                     onChange={this.handleChange.bind(this, 'first_name')}
                   />
                   :
@@ -106,7 +106,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={lastName}
+                    className="form-control" value={lastName || ''}
                     onChange={this.handleChange.bind(this, 'last_name')}
                   />
                   :
@@ -119,7 +119,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={description}
+                    className="form-control" value={description || ''}
                     onChange={this.handleChange.bind(this, 'description')}
                   />
                   :
@@ -132,7 +132,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={login}
+                    className="form-control" value={login || ''}
                     onChange={this.handleChange.bind(this, 'login')}
                   />
                   :
@@ -145,7 +145,7 @@ export default class MetaData extends Component {
               <div className="col s10">
                 {editing ?
                   <input
-                    className="form-control" value={about}
+                    className="form-control" value={about || ''}
                     onChange={this.handleChange.bind(this, 'about')}
                   />
                   :

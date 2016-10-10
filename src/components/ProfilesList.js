@@ -20,7 +20,7 @@ export default class ProfilesList extends Component {
   }
 
   render() {
-    const { users, loadUser, filterProfiles } = this.props;
+    const { users, loadUser, filterProfiles, createUser } = this.props;
     const exStyle = {
       color: 'gray'
     };
@@ -51,7 +51,7 @@ export default class ProfilesList extends Component {
         <div className="fixed-action-btn">
           <a
             className="btn-floating btn-large waves-effect waves-light red"
-            onClick={this.props.createUser}
+            onClick={createUser}
           >
             <i className="material-icons">add</i>
           </a>
