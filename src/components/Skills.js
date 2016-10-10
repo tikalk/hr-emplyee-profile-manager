@@ -51,7 +51,7 @@ export default class Skills extends Component {
               id={`input-${key}`}
               type="number"
               maxLength="2"
-              defaultValue={value}
+              value={value}
               onChange={this.updateSkill.bind(this, key)}
             />
           </div>
