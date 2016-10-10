@@ -229,7 +229,6 @@ export default class YamlEditor extends Component {
           </div>
         </div>
       </div>
-
     );
   }
 }

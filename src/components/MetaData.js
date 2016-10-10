@@ -44,8 +44,10 @@ export default class MetaData extends Component {
   }
 
   render() {
-    const { id, about, login, description, first_name: firstName,
-      last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath } = this.props.yamlData;
+    const {
+      id, about, login, description, first_name: firstName,
+      last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath
+    } = this.props.yamlData;
     const { editing } = this.props;
     let followMe;
     if (!editing) {
@@ -173,8 +175,7 @@ export default class MetaData extends Component {
                   <div className="photo-wrapper">
                     <img role="presentation" className="photo" src={imagePath} />
                   </div>
-                  :
-                  null
+                  : null
                 }
               </div>
             </div>

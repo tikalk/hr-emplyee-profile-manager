@@ -153,8 +153,8 @@ export default class App extends Component {
     return (
       <div className="app">
         {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}
-        {!showLoginPage &&
-          <div>
+        {
+          !showLoginPage && <div>
             <div className="side-nav fixed ">
               <div>
                 <img className="tikal-logo" src={logoUrl} alt="Tikal" />
