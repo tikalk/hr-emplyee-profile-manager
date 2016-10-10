@@ -1,6 +1,8 @@
 import GitHub from 'github-api';
 import { repoFix } from './githubApiFix';
 
+const noEx = name => (name.endsWith('.ex') ? name.substring(0, name.length - 3) : name);
+
 export default class GithubClient {
   constructor(token) {
     this.gh = new GitHub({ token: token.token });
@@ -38,14 +40,32 @@ export default class GithubClient {
     return this.repo.getContents(branch, `${userPath}/${userName}.yml`, true).then(({ data }) => data);
   }
 
-  saveUserProfile(oldUserName, userName, yaml, message = `saved ${userName} profile`) {
+  saveUserProfile(oldUserName, userName, yaml, message) {
     const { userPath, branch } = this;
     const src = `${userPath}/${oldUserName}.yml`;
     const trg = `${userPath}/${userName}.yml`;
-    const needRename = oldUserName && oldUserName !== userName;
+    const isNew = !oldUserName;
+    const needRename = !isNew && oldUserName !== userName;
+    // test for taget existence on new profile or real name change (not just ex<->active)
+    const testExistence = isNew || (needRename && noEx(oldUserName) !== noEx(userName));
+
+    const msg = message || `saved ${userName} profile; ${needRename ? `renamed from ${oldUserName}` : ''}`;
+
+    return Promise.resolve()
+      .then(() => {
+        return !testExistence ? true :
+          this.repo.getSha(branch, trg)
+            .then(() => {
+              const confirmed = confirm(`Profile named "${userName}" already exists. Do you want to overwrite it?`);
+              return confirmed ? true : Promise.reject('Rejected by user');
+            }, () => Promise.resolve()); // file not exists - continue saving
+      })
+      .then(() => this.repo.writeFile(branch, trg, yaml, msg, {})) // write new
+      .then(() => (needRename ? this.repo.deleteFile(branch, src) : true)); // delete old
+
     // rename if necessary and then write updated yaml
-    return (needRename ? this.repo.move(branch, src, trg) : Promise.resolve())
-      .then(() => this.repo.writeFile(branch, trg, yaml, message, {}));
+    // return (needRename ? this.repo.move(branch, src, trg) : Promise.resolve())
+    //   .then(() => this.repo.writeFile(branch, trg, yaml, message, {}));
   }
 
   loadTemplate() {
