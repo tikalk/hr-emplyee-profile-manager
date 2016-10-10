@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import ReactMarkdown from 'react-markdown';
 import autoBind from 'react-autobind';
-import EditToggle from './EditToggle';
 
 export default class ExperienceYaml extends Component {
 
   static propTypes = {
-    onSave: PropTypes.func,
-    editingChanged: PropTypes.func,
+    onChange: PropTypes.func,
+    editing: PropTypes.bool,
     years: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string
@@ -15,14 +14,6 @@ export default class ExperienceYaml extends Component {
 
   constructor(props) {
     super(props);
-
-    const { years, title, description } = props;
-    this.state = {
-      editing: false,
-      years,
-      title,
-      description
-    };
     autoBind(this);
   }
 
@@ -35,71 +26,55 @@ export default class ExperienceYaml extends Component {
   }
 
   updateYears(e) {
-    this.setState({ years: e.target.value });
+    this.props.onChange('years', e.target.value);
   }
 
   updateTitle(e) {
-    this.setState({ title: e.target.value });
+    this.props.onChange('title', e.target.value);
   }
 
   updateDesc(e) {
-    this.setState({ description: e.target.value });
+    this.props.onChange('description', e.target.value);
   }
-
-  toggleEditing() {
-    if (this.state.editing) {
-      const { title, description, years } = this.state;
-      this.props.onSave({
-        title, description, years
-      });
-    }
-    this.props.editingChanged(!this.state.editing);
-    this.setState({ editing: !this.state.editing });
-  }
-
 
   render() {
-    const { title, description, years } = this.props;
-    const { editing } = this.state;
+    const { title, description, years, editing } = this.props;
 
     return (
-      <div className="experience container">
+      <div className="experience">
         <div className="row">
-          <span className="col-md-1">
-            <EditToggle onToggleEditing={this.toggleEditing} editing={editing} />
-          </span>
-          <span className="col-md-2">years</span>
-          <span className="col-md-9">
+          <span className="col s2">years</span>
+          <span className="col s10">
             {editing ?
               <input className="form-control" defaultValue={years} onChange={this.updateYears} />
               :
-              <span>{years}</span>
+                <span>{years}</span>
             }
           </span>
         </div>
         <div className="row">
-          <span className="col-md-2 col-md-offset-1">title</span>
-          <span className="col-md-9">
-          {editing ?
-            <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
-            :
-            <span>{title}</span>
-          }
+          <span className="col s2 col-md-offset-1">title</span>
+          <span className="col s10">
+            {editing ?
+              <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
+              :
+                <span>{title}</span>
+            }
           </span>
         </div>
         <div className="row">
-          <span className="col-md-2 col-md-offset-1">description</span>
-          <span className="col-md-9">
+          <span className="col s2 col-md-offset-1">description</span>
+          <span className="col s10">
             {editing ?
               <textarea
-                className="form-control description-textarea"
+                className="materialize-textarea"
                 onChange={this.updateDesc}
                 defaultValue={description}
               />
               :
-              <span>
-                <ReactMarkdown softBreak="br" source={description} />
-              </span>
+                <span>
+                  <ReactMarkdown softBreak="br" source={description} />
+                </span>
             }
           </span>
         </div>

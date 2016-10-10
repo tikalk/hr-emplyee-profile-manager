@@ -1,34 +1,70 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
-export default function ProfilesList(props) {
-  const { users, loadUser } = props;
-  const exStyle = {
-    color: 'gray'
-  };
-  return (
-    <div className="btn-group">
-      <button
-        type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false"
-      >
-        Choose Profile <span className="caret" />
-      </button>
-      <ul className="dropdown-menu">
-        {(users || []).map((user) => (<li key={user.user}>
+export default class ProfilesList extends Component {
+
+  format(text) {
+    const selected = this.seatchVal ? this.seatchVal.value : null;
+    if (!selected) {
+      return text;
+    }
+    const startIndex = text.indexOf(selected);
+    const endIndex = startIndex + selected.length;
+    const section1 = text.substring(0, startIndex);
+    const section2 = text.substring(startIndex, endIndex);
+    const section3 = text.substring(endIndex, text.length);
+    return (
+      <span>{section1}
+        <strong style={{ backgroundColor: 'yellow' }}>{section2}</strong>{section3}
+      </span>
+    );
+  }
+
+  render() {
+    const { users, loadUser, filterProfiles } = this.props;
+    const exStyle = {
+      color: 'gray'
+    };
+
+    return (
+      <div className="profiles-list vertical layout">
+        <div className="vertical layout" style={{ height: '100%' }}>
+          <div className="searchWrapper">
+            <input
+              ref={(e) => {
+                this.seatchVal = e;
+              }}
+              onChange={filterProfiles}
+              placeholder="Search User"
+            />
+          </div>
+          <ul className="flex">
+            {(users || []).filter(u => !!u.user).map(user => (<li key={user.user}>
+              <a
+                onClick={loadUser.bind(null, user)}
+                style={user.isEx ? exStyle : {}}
+              >
+                {this.format(user.display)}
+              </a></li>))
+            }
+          </ul>
+        </div>
+        <div className="fixed-action-btn">
           <a
-            onClick={loadUser.bind(null, user)}
-            style={user.isEx ? exStyle : {}}
+            className="btn-floating btn-large waves-effect waves-light red"
+            onClick={this.props.createUser}
           >
-            {user.display}
-          </a></li>))
-        }
-      </ul>
-    </div>
-  );
+            <i className="material-icons">add</i>
+          </a>
+        </div>
+      </div>
+    );
+  }
 }
 
 ProfilesList.propTypes = {
   loadUser: PropTypes.func,
+  filterProfiles: PropTypes.func,
+  createUser: PropTypes.func,
   users: PropTypes.array
 };
 

@@ -2,11 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import jsYaml from 'js-yaml';
 import _ from 'lodash';
 import autoBind from 'react-autobind';
-import classNames from 'classnames';
 import ExperienceYaml from './ExperienceYaml';
 import Skills from './Skills';
 import MetaData from './MetaData';
-import ProfilesList from './ProfilesList';
+import NewSkill from './NewSkill';
 
 const history = [];
 
@@ -18,57 +17,67 @@ export default class YamlEditor extends Component {
     users: PropTypes.array,
     saveUser: PropTypes.func,
     loadUser: PropTypes.func,
-    createUser: PropTypes.func
+    createUser: PropTypes.func,
+    uploader: PropTypes.object
   };
 
   constructor(props) {
     super(props);
     autoBind(this);
     this.state = {
-      yamlData: props.yamlData || {},
-      editingCount: 0,
+      yamlData: _.cloneDeep(props.yamlData || {}),
+      editing: false,
       newUser: false
     };
   }
 
   componentWillReceiveProps(props) {
     this.setState({
-      yamlData: props.yamlData || {}
+      yamlData: _.cloneDeep(props.yamlData || {}),
+      editing: false
     });
   }
 
-  onSaveExperience(id, data) {
+  onValueChange(path, key, value) {
     const { yamlData } = this.state;
     history.push(_.cloneDeep(yamlData));
-    yamlData.experience[id] = data;
-    this.setState({ yamlData });
-  }
-
-  onSaveSkills(type, skills) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    yamlData.skills[type] = skills;
-    this.setState({ yamlData });
-  }
-
-  onSaveMetaData(metadata) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    _.merge(yamlData, metadata);
-    this.setState({ yamlData });
-  }
-
-  onEditingChanged(itemEditing) {
-    let { editingCount } = this.state;
-    editingCount += itemEditing ? 1 : -1;
-    this.setState({ editingCount });
-  }
-
-  undo() {
-    const yamlData = history.pop();
-    if (yamlData) {
-      this.setState({ yamlData });
+    if (!path || path.length === 0) {
+      yamlData[key] = value;
+    } else {
+      let obj = yamlData;
+      for (let i = 0; i < path.length; i++) {
+        if (i < path.length - 1) {
+          obj = obj[path[i]];
+        } else {
+          obj[path[i]][key] = value;
+        }
+      }
     }
+    this.setState({ yamlData, isDirty: true });
+  }
+
+  onSkillRemove(type, skill) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    delete yamlData.skills[type][skill];
+    this.setState({ yamlData, isDirty: true });
+  }
+
+  onSkillAdd(type, skill) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.skills[type][skill] = 0;
+    this.setState({ yamlData, isDirty: true });
+  }
+
+  save() {
+    const { user, saveUser } = this.props;
+    const { yamlData } = this.state;
+    if (!yamlData) return;
+    const yamlText = jsYaml.safeDump(yamlData);
+    saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText).then(() => {
+      this.state.newUser = false;
+    });
   }
 
   toggelEx() {
@@ -78,103 +87,126 @@ export default class YamlEditor extends Component {
     this.setState({ yamlData });
   }
 
-  save() {
-    const { user, saveUser } = this.props;
-    const { yamlData } = this.state;
-    if (!yamlData) return;
-    const yamlText = jsYaml.safeDump(yamlData);
-    console.log(yamlText);
-
-    saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText).then(() => {
-      this.state.newUser = false;
-    });
+  cancelEditing() {
+    let confirmed = true;
+    if (this.state.isDirty) {
+      confirmed = confirm('Are you sure? You will lose your changes'); // eslint-disable-line
+    }
+    if (confirmed) {
+      this.setState({ yamlData: _.cloneDeep(this.props.yamlData), editing: false });
+    }
   }
 
-  loadUser(user) {
-    return this.props.loadUser(user).then(() => {
-      history.length = 0;
-      this.setState({ newUser: false });
-    });
+  startEditing() {
+    this.setState({ editing: true });
   }
 
-  createUser() {
-    return this.props.createUser().then(() => {
-      history.length = 0;
-      this.setState({ newUser: true });
-    });
+  undo() {
+    const yamlData = history.pop();
+    if (yamlData) {
+      this.setState({ yamlData });
+    } else {
+      this.setState({ isDirty: false });
+    }
   }
 
   render() {
-    const { yamlData, editingCount, newUser } = this.state;
-    const { users } = this.props;
-    const { id, about, login, ex, description } = yamlData || {};
+    const { uploader } = this.props;
+    const { yamlData, editing } = this.state;
+    const { ex, description } = yamlData || {};
 
-    const exBtnClasses = classNames('btn', { 'btn-primary': !ex, 'btn-default': ex });
-    const active = ex ? 'Ex-Employee' : 'Active';
-    const canPublish = editingCount === 0 && yamlData && ((!newUser && history.length) || (newUser && login));
-
+    if (_.isEmpty(yamlData)) {
+      return <div />;
+    }
     const experienceItems = (yamlData.experience || []).map((exp, i) =>
       <ExperienceYaml
-        editingChanged={this.onEditingChanged}
-        onSave={this.onSaveExperience.bind(this, i)}
         key={i}
+        onChange={this.onValueChange.bind(this, ['experience'])}
+        editing={editing}
         {...exp}
       />
     );
     return (
-      <div className="profile container">
-        <div>
-          <img className="tikal-logo" src="../src/css/pictures/tikal-logo.png" alt="Tikal" />
-        </div>
-        <div className="main-buttons pull-right">
-          <ProfilesList users={users} loadUser={this.loadUser} />
-          <button className="btn" onClick={this.save} disabled={!canPublish}>Publish</button>
-          <button className="btn" onClick={this.undo} disabled={editingCount > 0 || !history.length}>Undo</button>
-          <button className="btn" onClick={this.createUser} disabled={editingCount > 0}>New Profile</button>
-        </div>
-        {yamlData &&
+      <div className="profile">
+        <nav className="top-nav">
+          <div className="nav-wrapper">
+            <ul className="right">
+              {!editing && <li><a onClick={this.startEditing}><i className="material-icons">edit</i></a></li>}
+              {editing && <li><a onClick={this.cancelEditing}><i className="material-icons">cancel</i></a></li>}
+              <li><a onClick={this.save}>Publish</a></li>
+              <li><a onClick={this.undo} disabled={!history.length}>Undo</a></li>
+            </ul>
+          </div>
+        </nav>
+        <div className="profile-details">
+          <h3 className="titleName">
+            {yamlData.first_name} {yamlData.last_name}
+          </h3>
+          <h4 className="descName">{description}</h4>
           <div>
-            <h1 className="titleName">
-              {yamlData.first_name} {yamlData.last_name}
-            </h1>
-            <h2 className="descName">{description}</h2>
-            <div>
-              <button onClick={this.toggelEx} className={exBtnClasses}>{active}</button>
+            <div className="switch">
+              <label>
+                Ex Employee
+                {ex ?
+                  <input onChange={this.toggelEx} type="checkbox" />
+                  :
+                    <input onChange={this.toggelEx} type="checkbox" checked />
+                }
+                <span className="lever" />
+                Active
+              </label>
             </div>
-            <MetaData
-              saveMetaData={this.onSaveMetaData}
-              id={id}
-              about={about}
-              login={login}
-              editingChanged={this.onEditingChanged}
-              description={description}
-              first_name={yamlData.first_name}
-              last_name={yamlData.last_name}
-              follow_me_urls={yamlData.follow_me_urls}
-            />
-            <h2>Experience</h2>
-            <div className="container">
+          </div>
+          <MetaData
+            yamlData={yamlData}
+            onChange={this.onValueChange.bind(this, '')}
+            editing={editing}
+            uploader={uploader}
+          />
+          <div className="card-panel">
+            <h4>Experience</h4>
+            <div className="section">
               {experienceItems}
             </div>
-            <h2>Skills</h2>
+          </div>
+          <div className="card-panel">
+            <h4>Skills</h4>
             {yamlData.skills &&
-              <div>
-                <h3>Developer Skills</h3>
+            <div className="row">
+              <div className="col s6">
+                <h5>Developer Skills</h5>
                 <Skills
-                  editingChanged={this.onEditingChanged}
-                  saveSkills={this.onSaveSkills.bind(this, 'developer_skills')}
-                  skills={yamlData.skills.developer_skills}
+                  skills={yamlData.skills.developer_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
+                  editing={editing}
                 />
-                <h3>Expert skills</h3>
-                <Skills
-                  editingChanged={this.onEditingChanged}
-                  saveSkills={this.onSaveSkills.bind(this, 'expert_skills')}
-                  skills={yamlData.skills.expert_skills}
+                {editing &&
+                <NewSkill
+                  skills={Object.keys(yamlData.skills.developer_skills || {})}
+                  onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
                 />
+                }
               </div>
+              <div className="col s6">
+                <h5>Expert skills</h5>
+                <Skills
+                  skills={yamlData.skills.expert_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
+                  editing={editing}
+                />
+                {editing &&
+                <NewSkill
+                  skills={Object.keys(yamlData.skills.expert_skills || {})}
+                  onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
+                />
+                }
+              </div>
+            </div>
             }
           </div>
-        }
+        </div>
       </div>
     );
   }
