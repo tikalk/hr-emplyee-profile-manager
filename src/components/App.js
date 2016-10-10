@@ -153,31 +153,31 @@ export default class App extends Component {
     return (
       <div className="app">
         {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}
-        {!showLoginPage &&
-        <div>
-          <div className="side-nav fixed ">
-            <div>
-              <img className="tikal-logo" src={logoUrl} alt="Tikal" />
+        {
+          !showLoginPage && <div>
+            <div className="side-nav fixed ">
+              <div>
+                <img className="tikal-logo" src={logoUrl} alt="Tikal" />
+              </div>
+              <ProfilesList
+                users={users}
+                loadUser={this.loadUser}
+                filterProfiles={this.filterProfiles}
+                createUser={this.createUser}
+              />
             </div>
-            <ProfilesList
-              users={users}
-              loadUser={this.loadUser}
-              filterProfiles={this.filterProfiles}
-              createUser={this.createUser}
-            />
+            <main>
+              <YamlEditor
+                users={users}
+                user={user}
+                yamlData={userYaml}
+                loadUser={this.loadUser}
+                saveUser={this.saveUser}
+                createUser={this.createUser}
+                uploader={this.uploader}
+              />
+            </main>
           </div>
-          <main>
-            <YamlEditor
-              users={users}
-              user={user}
-              yamlData={userYaml}
-              loadUser={this.loadUser}
-              saveUser={this.saveUser}
-              createUser={this.createUser}
-              uploader={this.uploader}
-            />
-          </main>
-        </div>
         }
       </div>
     );

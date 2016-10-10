@@ -44,8 +44,10 @@ export default class MetaData extends Component {
   }
 
   render() {
-    const { id, about, login, description, first_name: firstName,
-      last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath } = this.props.yamlData;
+    const {
+      id, about, login, description, first_name: firstName,
+      last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath
+    } = this.props.yamlData;
     const { editing } = this.props;
     let followMe;
     if (!editing) {
@@ -82,7 +84,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'id')}
                   />
                   :
-                    <span>{id}</span>
+                  <span>{id}</span>
                 }
               </div>
             </div>
@@ -95,7 +97,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'first_name')}
                   />
                   :
-                    <span>{firstName}</span>
+                  <span>{firstName}</span>
                 }
               </div>
             </div>
@@ -108,7 +110,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'last_name')}
                   />
                   :
-                    <span>{lastName}</span>
+                  <span>{lastName}</span>
                 }
               </div>
             </div>
@@ -121,7 +123,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'description')}
                   />
                   :
-                    <span>{description}</span>
+                  <span>{description}</span>
                 }
               </div>
             </div>
@@ -134,7 +136,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'login')}
                   />
                   :
-                    <span>{login}</span>
+                  <span>{login}</span>
                 }
               </div>
             </div>
@@ -147,7 +149,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'about')}
                   />
                   :
-                    <span>{about}</span>
+                  <span>{about}</span>
                 }
               </div>
             </div>
