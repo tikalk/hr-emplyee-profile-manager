@@ -82,7 +82,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'id')}
                   />
                   :
-                  <span>{id}</span>
+                    <span>{id}</span>
                 }
               </div>
             </div>
@@ -95,7 +95,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'first_name')}
                   />
                   :
-                  <span>{firstName}</span>
+                    <span>{firstName}</span>
                 }
               </div>
             </div>
@@ -108,7 +108,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'last_name')}
                   />
                   :
-                  <span>{lastName}</span>
+                    <span>{lastName}</span>
                 }
               </div>
             </div>
@@ -121,7 +121,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'description')}
                   />
                   :
-                  <span>{description}</span>
+                    <span>{description}</span>
                 }
               </div>
             </div>
@@ -134,7 +134,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'login')}
                   />
                   :
-                  <span>{login}</span>
+                    <span>{login}</span>
                 }
               </div>
             </div>
@@ -147,7 +147,7 @@ export default class MetaData extends Component {
                     onChange={this.handleChange.bind(this, 'about')}
                   />
                   :
-                  <span>{about}</span>
+                    <span>{about}</span>
                 }
               </div>
             </div>
@@ -173,8 +173,7 @@ export default class MetaData extends Component {
                   <div className="photo-wrapper">
                     <img role="presentation" className="photo" src={imagePath} />
                   </div>
-                  :
-                  null
+                  : null
                 }
               </div>
             </div>

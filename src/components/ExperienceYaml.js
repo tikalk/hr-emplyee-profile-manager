@@ -48,7 +48,7 @@ export default class ExperienceYaml extends Component {
             {editing ?
               <input className="form-control" defaultValue={years} onChange={this.updateYears} />
               :
-              <span>{years}</span>
+                <span>{years}</span>
             }
           </span>
         </div>
@@ -58,7 +58,7 @@ export default class ExperienceYaml extends Component {
             {editing ?
               <input className="form-control" defaultValue={title} onChange={this.updateTitle} />
               :
-              <span>{title}</span>
+                <span>{title}</span>
             }
           </span>
         </div>
@@ -72,9 +72,9 @@ export default class ExperienceYaml extends Component {
                 defaultValue={description}
               />
               :
-              <span>
-                <ReactMarkdown softBreak="br" source={description} />
-              </span>
+                <span>
+                  <ReactMarkdown softBreak="br" source={description} />
+                </span>
             }
           </span>
         </div>

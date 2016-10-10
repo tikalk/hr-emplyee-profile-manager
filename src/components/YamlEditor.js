@@ -150,7 +150,7 @@ export default class YamlEditor extends Component {
                 {ex ?
                   <input onChange={this.toggelEx} type="checkbox" />
                   :
-                  <input onChange={this.toggelEx} type="checkbox" checked />
+                    <input onChange={this.toggelEx} type="checkbox" checked />
                 }
                 <span className="lever" />
                 Active
@@ -172,43 +172,42 @@ export default class YamlEditor extends Component {
           <div className="card-panel">
             <h4>Skills</h4>
             {yamlData.skills &&
-              <div className="row">
-                <div className="col s6">
-                  <h5>Developer Skills</h5>
-                  <Skills
-                    skills={yamlData.skills.developer_skills || {}}
-                    onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
-                    onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
-                    editing={editing}
-                  />
-                  {editing &&
-                    <NewSkill
-                      skills={Object.keys(yamlData.skills.developer_skills || {})}
-                      onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
-                    />
-                  }
-                </div>
-                <div className="col s6">
-                  <h5>Expert skills</h5>
-                  <Skills
-                    skills={yamlData.skills.expert_skills || {}}
-                    onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
-                    onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
-                    editing={editing}
-                  />
-                  {editing &&
-                    <NewSkill
-                      skills={Object.keys(yamlData.skills.expert_skills || {})}
-                      onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
-                    />
-                  }
-                </div>
+            <div className="row">
+              <div className="col s6">
+                <h5>Developer Skills</h5>
+                <Skills
+                  skills={yamlData.skills.developer_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
+                  editing={editing}
+                />
+                {editing &&
+                <NewSkill
+                  skills={Object.keys(yamlData.skills.developer_skills || {})}
+                  onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
+                />
+                }
               </div>
+              <div className="col s6">
+                <h5>Expert skills</h5>
+                <Skills
+                  skills={yamlData.skills.expert_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
+                  editing={editing}
+                />
+                {editing &&
+                <NewSkill
+                  skills={Object.keys(yamlData.skills.expert_skills || {})}
+                  onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
+                />
+                }
+              </div>
+            </div>
             }
           </div>
         </div>
       </div>
-
     );
   }
 }
