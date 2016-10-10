@@ -58,29 +58,33 @@ export default class NewExperience extends Component {
     return (
       <div className="input-field">
         <div className="row">
-          <span className="col s2">Years</span>
-          <span className="col s10">
-            <input className="form-control" value={years} onChange={this.updateYears} />
-          </span>
-        </div>
-        <div className="row">
-          <span className="col s2 col-md-offset-1">Title</span>
-          <span className="col s10">
-            <input className="form-control" value={title} onChange={this.updateTitle} />
-          </span>
-        </div>
-        <div className="row">
-          <span className="col s2 col-md-offset-1">Description</span>
-          <span className="col s10">
-            <textarea
-              className="materialize-textarea"
-              onChange={this.updateDesc}
-              value={description}
-            />
-          </span>
-        </div>
-        <div>
-          <a onClick={this.add}><i className={linkClasses}>check</i></a>
+          <div className="col s1">
+            <a onClick={this.add}><i className={linkClasses}>check</i></a>
+          </div>
+          <div className="col s11">
+            <div className="row">
+              <span className="col s2">Years</span>
+              <span className="col s10">
+                <input className="form-control" value={years} onChange={this.updateYears} />
+              </span>
+            </div>
+            <div className="row">
+              <span className="col s2 col-md-offset-1">Title</span>
+              <span className="col s10">
+                <input className="form-control" value={title} onChange={this.updateTitle} />
+              </span>
+            </div>
+            <div className="row">
+              <span className="col s2 col-md-offset-1">Description</span>
+              <span className="col s10">
+                <textarea
+                  className="materialize-textarea"
+                  onChange={this.updateDesc}
+                  value={description}
+                />
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     );

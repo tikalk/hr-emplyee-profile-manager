@@ -78,6 +78,13 @@ export default class YamlEditor extends Component {
     this.setState({ yamlData, isDirty: true });
   }
 
+  onExperienceRemove(index) {
+    const { yamlData } = this.state;
+    history.push(_.cloneDeep(yamlData));
+    yamlData.experience.splice(index, 1);
+    this.setState({ yamlData, isDirty: true });
+  }
+
   save() {
     const { user, saveUser } = this.props;
     const { yamlData } = this.state;
@@ -130,6 +137,7 @@ export default class YamlEditor extends Component {
       <ExperienceYaml
         key={i}
         onChange={this.onValueChange.bind(this, ['experience', i])}
+        onRemove={this.onExperienceRemove.bind(this, i)}
         editing={editing}
         {...exp}
       />

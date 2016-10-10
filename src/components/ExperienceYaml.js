@@ -6,6 +6,7 @@ export default class ExperienceYaml extends Component {
 
   static propTypes = {
     onChange: PropTypes.func,
+    onRemove: PropTypes.func,
     editing: PropTypes.bool,
     years: PropTypes.string,
     title: PropTypes.string,
@@ -30,46 +31,56 @@ export default class ExperienceYaml extends Component {
   }
 
   render() {
-    const { title, description, years, editing } = this.props;
+    const { title, description, years, editing, onRemove } = this.props;
 
     return (
       <div className="experience">
         <hr />
         <div className="row">
-          <span className="col s2">Years</span>
-          <span className="col s10">
-            {editing ?
-              <input className="form-control" value={years} onChange={this.updateYears} />
-              :
-              <span>{years}</span>
-            }
-          </span>
-        </div>
-        <div className="row">
-          <span className="col s2 col-md-offset-1">Title</span>
-          <span className="col s10">
-            {editing ?
-              <input className="form-control" value={title} onChange={this.updateTitle} />
-              :
-              <span>{title}</span>
-            }
-          </span>
-        </div>
-        <div className="row">
-          <span className="col s2 col-md-offset-1">Description</span>
-          <span className="col s10">
-            {editing ?
-              <textarea
-                className="materialize-textarea"
-                onChange={this.updateDesc}
-                value={description}
-              />
-              :
-              <span>
-                <ReactMarkdown softBreak="br" source={description} />
+          {
+            editing && <div className="col s1">
+              <a>
+                <i className="material-icons tiny" onClick={onRemove}>remove_circle_outline</i>
+              </a>
+            </div>
+          }
+          <div className="col s11">
+            <div className="row">
+              <span className="col s2">Years</span>
+              <span className="col s10">
+                {editing ?
+                  <input className="form-control" value={years} onChange={this.updateYears} />
+                  :
+                  <span>{years}</span>
+                }
               </span>
-            }
-          </span>
+            </div>
+            <div className="row">
+              <span className="col s2 col-md-offset-1">Title</span>
+              <span className="col s10">
+                {editing
+                  ? <input className="form-control" value={title} onChange={this.updateTitle} />
+                  : <span>{title}</span>
+                }
+              </span>
+            </div>
+            <div className="row">
+              <span className="col s2 col-md-offset-1">Description</span>
+              <span className="col s10">
+                {editing ?
+                  <textarea
+                    className="materialize-textarea"
+                    onChange={this.updateDesc}
+                    value={description}
+                  />
+                  :
+                  <span>
+                    <ReactMarkdown softBreak="br" source={description} />
+                  </span>
+                }
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     );
