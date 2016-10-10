@@ -15,10 +15,7 @@ export default class YamlEditor extends Component {
   static propTypes = {
     yamlData: PropTypes.object,
     user: PropTypes.string,
-    users: PropTypes.array,
     saveUser: PropTypes.func,
-    loadUser: PropTypes.func,
-    createUser: PropTypes.func,
     uploader: PropTypes.object
   };
 
@@ -27,15 +24,14 @@ export default class YamlEditor extends Component {
     autoBind(this);
     this.state = {
       yamlData: _.cloneDeep(props.yamlData || {}),
-      editing: false,
-      newUser: false
+      editing: !props.user
     };
   }
 
   componentWillReceiveProps(props) {
     this.setState({
       yamlData: _.cloneDeep(props.yamlData || {}),
-      editing: false
+      editing: !props.user
     });
   }
 
@@ -90,9 +86,7 @@ export default class YamlEditor extends Component {
     const { yamlData } = this.state;
     if (!yamlData) return;
     const yamlText = jsYaml.safeDump(yamlData);
-    saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText).then(() => {
-      this.state.newUser = false;
-    });
+    saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText);
   }
 
   toggelEx() {

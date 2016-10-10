@@ -168,12 +168,9 @@ export default class App extends Component {
             </div>
             <main>
               <YamlEditor
-                users={users}
                 user={user}
                 yamlData={userYaml}
-                loadUser={this.loadUser}
                 saveUser={this.saveUser}
-                createUser={this.createUser}
                 uploader={this.uploader}
               />
             </main>
