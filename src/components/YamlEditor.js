@@ -36,64 +36,60 @@ export default class YamlEditor extends Component {
   }
 
   onValueChange(path, key, value) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    if (!path || path.length === 0) {
-      yamlData[key] = value;
-    } else {
-      let obj = yamlData;
-      for (let i = 0; i < path.length; i++) {
-        if (i < path.length - 1) {
-          obj = obj[path[i]];
-        } else {
-          obj[path[i]][key] = value;
+    this.safelyApplyYamlData((yamlData) => {
+      if (!path || path.length === 0) {
+        yamlData[key] = value;
+      } else {
+        let obj = yamlData;
+        for (let i = 0; i < path.length; i++) {
+          if (i < path.length - 1) {
+            obj = obj[path[i]];
+          } else {
+            obj[path[i]][key] = value;
+          }
         }
       }
-    }
-    this.setState({ yamlData, isDirty: true });
+    });
   }
 
   onSkillRemove(type, skill) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    delete yamlData.skills[type][skill];
-    this.setState({ yamlData, isDirty: true });
+    this.safelyApplyYamlData(yamlData => (delete yamlData.skills[type][skill]));
   }
 
   onSkillAdd(type, skill) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    yamlData.skills[type][skill] = 0;
-    this.setState({ yamlData, isDirty: true });
+    this.safelyApplyYamlData((yamlData) => {
+      const skills = yamlData.skills[type] || {};
+      skills[skill] = 0;
+      yamlData.skills[type] = skills;
+    });
   }
 
   onExperienceAdd(exp) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    yamlData.experience = [exp, ...(yamlData.experience || [])];
-    this.setState({ yamlData, isDirty: true });
+    this.safelyApplyYamlData(yamlData => (yamlData.experience = [exp, ...(yamlData.experience || [])]));
   }
 
   onExperienceRemove(index) {
-    const { yamlData } = this.state;
-    history.push(_.cloneDeep(yamlData));
-    yamlData.experience.splice(index, 1);
-    this.setState({ yamlData, isDirty: true });
+    this.safelyApplyYamlData(yamlData => (yamlData.experience.splice(index, 1)));
   }
 
   save() {
     const { user, saveUser } = this.props;
     const { yamlData } = this.state;
-    if (!yamlData) return;
+    if (!yamlData || !yamlData.login) return;
     const yamlText = jsYaml.safeDump(yamlData);
     saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText);
   }
 
   toggelEx() {
-    const { yamlData } = this.state;
+    this.safelyApplyYamlData(yamlData => (yamlData.ex = !yamlData.ex));
+  }
+
+  safelyApplyYamlData(update) {
+    const { yamlData, editing } = this.state;
+    if (!editing) return;
     history.push(_.cloneDeep(yamlData));
-    yamlData.ex = !yamlData.ex;
-    this.setState({ yamlData });
+    update(yamlData);
+    this.setState({ yamlData, isDirty: true });
   }
 
   cancelEditing() {
@@ -165,11 +161,7 @@ export default class YamlEditor extends Component {
             <div className="switch">
               <label>
                 Ex Employee
-                {ex ?
-                  <input onChange={this.toggelEx} type="checkbox" />
-                  :
-                  <input onChange={this.toggelEx} type="checkbox" checked />
-                }
+                <input onChange={this.toggelEx} type="checkbox" checked={!ex} />
                 <span className="lever" />
                 Active
               </label>
