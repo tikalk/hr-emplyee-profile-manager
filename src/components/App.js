@@ -10,6 +10,7 @@ import ProfilesList from './ProfilesList';
 
 // eslint-disable-next-line
 const logoUrl = require('file!img!../css/pictures/tikal-logo.png');
+const preloaderUrl = require('file!img!../css/pictures/preloader.gif');
 
 let githubClient;
 const storageAuthKey = 'currentAuth';
@@ -26,8 +27,9 @@ export default class App extends Component {
     if (auth && !auth.token) {
       auth = undefined;
     }
-    const state = {};
-
+    const state = {
+      operationInProgress : false
+    };
     state.auth = auth;
     this.state = state;
     autoBind(this);
@@ -48,11 +50,9 @@ export default class App extends Component {
       cloudinaryAPIKey: tokens.cloudinaryAPIKey,
       cloudinarySecret: tokens.cloudinarySecret
     };
-
     if (!auth.token) {
       return;
     }
-
     this.authenticate(auth).then(() => {
       localStorage.setItem(storageAuthKey, JSON.stringify(auth));
       this.loadUsers();
@@ -90,16 +90,18 @@ export default class App extends Component {
   }
 
   createUser() {
+    this.setState({operationInProgress : true});
     githubClient.loadTemplate().then((yamlTemplate) => {
       const userYaml = jsYaml.safeLoad(yamlTemplate);
-      this.setState({ userYaml, user: '' });
+      this.setState({ userYaml, user: '',operationInProgress : false });
     });
   }
 
   saveUser(oldName, name, yaml) {
+    this.setState({operationInProgress : true});
     return githubClient.saveUserProfile(oldName, name, yaml).then(() => {
       // console.log(`user ${name} saved`);
-      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name });
+      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name, operationInProgress : false });
       // reload users to update links after commit
       this.loadUsers();
     });
@@ -108,8 +110,9 @@ export default class App extends Component {
   loadUser(userInfo) {
     const { user } = userInfo;
     // console.log('user', user);
+    this.setState({operationInProgress : true});
     return githubClient.loadUserProfile(user).then((userYaml) => {
-      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user });
+      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user,operationInProgress : false });
       return user;
     });
   }
@@ -131,7 +134,9 @@ export default class App extends Component {
         return 0;
       });
       this.setState({ users, originalList: cloneDeep(users) });
+
     });
+
   }
 
   filterProfiles(e) {
@@ -147,13 +152,20 @@ export default class App extends Component {
   }
 
   render() {
+    $('#preloader').hide();
     const { auth, users, userYaml, user } = this.state;
-
     const showLoginPage = !auth || !this.uploader;
+    const spinner = <img src={preloaderUrl} alt="Loading..." />;
+    const operationInProgress = this.state.operationInProgress;
     return (
       <div className="app">
+        {
+           operationInProgress  ?  <div className='preloader'>{spinner}</div> : null
+        }
+
         {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}
         {
+
           !showLoginPage && <div>
             <div className="side-nav fixed ">
               <div>
@@ -175,7 +187,7 @@ export default class App extends Component {
               />
             </main>
           </div>
-        }
+          }
       </div>
     );
   }

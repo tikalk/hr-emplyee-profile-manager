@@ -4,6 +4,24 @@
     display: block;
 }
 
+.preloader{
+    position: absolute;
+    left: 50%;
+    top:50%;
+}
+
+.image-preloader{
+    position:relative;
+    top:40%;
+    left:40%;
+}
+
+.error{
+    position: absolute;
+    left: 50%;
+    top:50%;
+}
+
 a {
     cursor: pointer;
 }
