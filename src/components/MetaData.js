@@ -2,8 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
 import Dropzone from 'react-dropzone';
 
-export default class MetaData extends Component {
+let imageUploadInProgress = false;
 
+
+export default class MetaData extends Component {
   static propTypes = {
     yamlData: PropTypes.object,
     onChange: PropTypes.func,
@@ -13,6 +15,9 @@ export default class MetaData extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      imageUploadInProgress: false
+    }
     autoBind(this);
   }
 
@@ -20,10 +25,17 @@ export default class MetaData extends Component {
     const { uploader } = this.props;
     const { path, name } = files[0];
     // upload to cloudinarys
+    this.setState({
+        imageUploadInProgress: true
+    });
     uploader.upload(path,
       (result) => {
         const { onChange } = this.props;
+        this.setState({
+          imageUploadInProgress: false
+        });
         onChange('image_path', result.url);
+
       },
       {
         public_id: `site/pictures/${name}`,
@@ -49,6 +61,9 @@ export default class MetaData extends Component {
       last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath
     } = this.props.yamlData;
     const { editing } = this.props;
+    const preloaderUrl = require('file!img!../css/pictures/preloader.gif');
+    const spinner = <img src={preloaderUrl} alt="Loading..." />;
+    const imageUploadInProgress = this.state.imageUploadInProgress;
     let followMe;
     if (!editing) {
       followMe = (followMeUrls || []).map((url, i) => {
@@ -164,19 +179,23 @@ export default class MetaData extends Component {
                 <h5>Profile picture</h5>
                 {editing ?
                   <div>
-                    <div>
+                    <div style={{cursor:'hand'}}>
                       <Dropzone className="drop-zone card-panel" onDrop={this.onDrop}>
                         <div>Drop or click here to choose a picture</div>
                       </Dropzone>
                     </div>
                   </div> : null
                 }
-                {imagePath ?
                   <div className="photo-wrapper">
-                    <img role="presentation" className="photo" src={imagePath} />
+                    {
+                      imagePath && !imageUploadInProgress  ?   <img role="presentation" className="photo" src={imagePath} /> : null
+                    }
+                    {
+                      imageUploadInProgress ? <div className='image-preloader'>{spinner}</div> : null
+                    }
+
                   </div>
-                  : null
-                }
+
               </div>
             </div>
           </div>
