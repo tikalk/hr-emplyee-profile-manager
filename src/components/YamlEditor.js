@@ -35,6 +35,11 @@ export default class YamlEditor extends Component {
     });
   }
 
+  onProfileDataChange(key, evt){
+    const value = evt.target.value;
+    this.onValueChange('',key,value);
+  }
+
   onValueChange(path, key, value) {
     this.safelyApplyYamlData((yamlData) => {
       if (!path || path.length === 0) {
@@ -153,10 +158,35 @@ export default class YamlEditor extends Component {
           </div>
         </nav>
         <div className="profile-details">
-          <h3 className="titleName">
-            {yamlData.first_name} {yamlData.last_name}
-          </h3>
-          <h4 className="descName">{description}</h4>
+          <div className="row">
+            <div className="col s2">Title</div>
+              <div className="col s10">
+                {editing ?
+                  <input
+                    className="form-control" value={yamlData.title || (yamlData.first_name + " " + yamlData.last_name)}
+                    onChange={this.onProfileDataChange.bind(this,'title')}
+                  />
+                  : yamlData.title ? <span>{yamlData.title}</span>  : <span>{yamlData.first_name} {yamlData.last_name}</span>
+                }
+              </div>
+
+           </div>
+           <div className="row">
+              <div className="col s2">Description</div>
+              <div className="col s10">
+              {editing ?
+                  <textarea
+                    className="materialize-textarea"
+                    onChange={this.onProfileDataChange.bind(this,'description')}
+                    value={description}
+                  />
+                  :
+                  <span>
+                    {description}
+                  </span>
+              }
+            </div>
+           </div>
           <div>
             <div className="switch">
               <label>
