@@ -222,3 +222,8 @@ i.glyphicon {
 .profiles-list .fixed-action-btn {
     bottom: 90px;
 }
+
+.fixed-action-btn ul a.btn-floating {
+    transform: scaleY(1) scaleX(1) translateY(0px) translateX(0px);
+    opacity: 1;
+}

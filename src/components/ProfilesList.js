@@ -47,9 +47,9 @@ export default class ProfilesList extends Component {
         <div className="fixed-action-btn">
           <a
             className="btn-floating btn-large waves-effect waves-light red"
-            onClick={createUser}
+            onClick={createUser} title="Add new profile"
           >
-            <i className="material-icons">add</i>
+            <i className="material-icons">person_add</i>
           </a>
         </div>
       </div>

@@ -35,9 +35,9 @@ export default class YamlEditor extends Component {
     });
   }
 
-  onProfileDataChange(key, evt){
+  onProfileDataChange(key, evt) {
     const value = evt.target.value;
-    this.onValueChange('',key,value);
+    this.onValueChange('', key, value);
   }
 
   onValueChange(path, key, value) {
@@ -139,6 +139,7 @@ export default class YamlEditor extends Component {
     );
     return (
       <div className="profile">
+{/*
         <nav className="top-nav">
           <div className="nav-wrapper">
             <ul className="right">
@@ -157,36 +158,39 @@ export default class YamlEditor extends Component {
             </ul>
           </div>
         </nav>
+*/}
         <div className="profile-details">
           <div className="row">
             <div className="col s2">Title</div>
-              <div className="col s10">
-                {editing ?
-                  <input
-                    className="form-control" value={yamlData.title || (yamlData.first_name + " " + yamlData.last_name)}
-                    onChange={this.onProfileDataChange.bind(this,'title')}
-                  />
-                  : yamlData.title ? <span>{yamlData.title}</span>  : <span>{yamlData.first_name} {yamlData.last_name}</span>
-                }
-              </div>
-
-           </div>
-           <div className="row">
-              <div className="col s2">Description</div>
-              <div className="col s10">
+            <div className="col s10">
               {editing ?
-                  <textarea
-                    className="materialize-textarea"
-                    onChange={this.onProfileDataChange.bind(this,'description')}
-                    value={description}
-                  />
-                  :
-                  <span>
+                <input
+                  className="form-control"
+                  value={yamlData.title || (yamlData.first_name + " " + yamlData.last_name)}
+                  onChange={this.onProfileDataChange.bind(this, 'title')}
+                />
+                : yamlData.title ? <span>{yamlData.title}</span> :
+                <span>{yamlData.first_name} {yamlData.last_name}</span>
+              }
+            </div>
+
+          </div>
+          <div className="row">
+            <div className="col s2">Description</div>
+            <div className="col s10">
+              {editing ?
+                <textarea
+                  className="materialize-textarea"
+                  onChange={this.onProfileDataChange.bind(this, 'description')}
+                  value={description}
+                />
+                :
+                <span>
                     {description}
                   </span>
               }
             </div>
-           </div>
+          </div>
           <div>
             <div className="switch">
               <label>
@@ -252,6 +256,27 @@ export default class YamlEditor extends Component {
             }
           </div>
         </div>
+        { editing ?
+          <div className="fixed-action-btn vertical active"
+               style={{ bottom: '45px', right: '24px' }}>
+            <a className="btn-floating btn-large teal accent-4" onClick={this.save} title="Publish">
+              <i className="large material-icons">cloud_done</i>
+            </a>
+            <ul>
+              <li><a className="btn-floating blue" onClick={this.undo} disabled={!history.length} title="Undo">
+                <i className="material-icons">undo</i></a></li>
+              <li><a className="btn-floating red" onClick={this.cancelEditing} title="Cancel">
+                <i className="material-icons">clear</i></a></li>
+            </ul>
+          </div>
+          :
+          <div className="fixed-action-btn vertical"
+               style={{ bottom: '45px', right: '24px' }}>
+            <a className="btn-floating btn-large red" onClick={this.startEditing} title="Edit">
+              <i className="large material-icons">mode_edit</i>
+            </a>
+          </div>
+        }
       </div>
     );
   }
