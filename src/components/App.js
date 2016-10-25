@@ -168,7 +168,7 @@ export default class App extends Component {
 
           !showLoginPage && <div>
             <div className="side-nav fixed ">
-              <div>
+              <div className="logo">
                 <img className="tikal-logo" src={logoUrl} alt="Tikal" />
               </div>
               <ProfilesList

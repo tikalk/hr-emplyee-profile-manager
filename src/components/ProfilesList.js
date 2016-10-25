@@ -21,9 +21,6 @@ export default class ProfilesList extends Component {
 
   render() {
     const { users, loadUser, filterProfiles, createUser } = this.props;
-    const exStyle = {
-      color: 'gray'
-    };
 
     return (
       <div className="profiles-list vertical layout">
@@ -38,22 +35,21 @@ export default class ProfilesList extends Component {
             />
           </div>
           <ul className="flex">
-            {(users || []).filter(u => !!u.user).map(user => (<li key={user.user}>
-              <a
-                onClick={loadUser.bind(null, user)}
-                style={user.isEx ? exStyle : {}}
-              >
-                {this.format(user.display)}
-              </a></li>))
+            {(users || []).filter(u => !!u.user).map(user => (
+              <li key={user.user} className={ user.isEx ? 'ex-employee' : 'active-employee'}>
+                <a onClick={loadUser.bind(null, user)}>
+                  {this.format(user.display)}
+                </a>
+              </li>))
             }
           </ul>
         </div>
         <div className="fixed-action-btn">
           <a
             className="btn-floating btn-large waves-effect waves-light red"
-            onClick={createUser}
+            onClick={createUser} title="Add new profile"
           >
-            <i className="material-icons">add</i>
+            <i className="material-icons">person_add</i>
           </a>
         </div>
       </div>
