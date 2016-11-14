@@ -1,0 +1,38 @@
+// Use this file as a starting point for your project's .eslintrc.
+// Copy this file, and add rule overrides as needed.
+{
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "mocha": true,
+    "node": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "max-len": [1, 120, 2, {"ignoreComments": true}],
+    "comma-dangle": [0, "always-multiline" ],
+    "class-methods-use-this": 1,
+    "no-param-reassign": [2, { "props": false }],
+    "react/jsx-filename-extension": [1, {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/forbid-prop-types": 0,
+    "react/no-unused-prop-types": 0,
+    "react/jsx-no-bind": [0, {
+      "ignoreRefs": false,
+      "allowArrowFunctions": false,
+      "allowBind": true
+    }],
+    "react/jsx-space-before-closing": [1, "always"],
+    "jsx-a11y/no-static-element-interactions": 0,
+    "jsx-a11y/label-has-for": 0,
+    "linebreak-style": 0,
+    "arrow-body-style": [0, "as-needed"],
+    "no-plusplus": [1, { "allowForLoopAfterthoughts": true }]
+  }
+}
