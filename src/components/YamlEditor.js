@@ -128,7 +128,9 @@ export default class YamlEditor extends Component {
     if (_.isEmpty(yamlData)) {
       return <div />;
     }
-    const experienceItems = (yamlData.experience || []).map((exp, i) =>
+    const experienceItems = (yamlData.experience || [])
+      .filter(e => e.years && e.title)
+      .map((exp, i) =>
       <ExperienceYaml
         key={i}
         onChange={this.onValueChange.bind(this, ['experience', i])}

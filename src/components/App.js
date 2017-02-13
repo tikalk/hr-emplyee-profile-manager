@@ -95,7 +95,7 @@ export default class App extends Component {
     this.setState({operationInProgress : true});
     githubClient.loadTemplate().then((yamlTemplate) => {
       const userYaml = jsYaml.safeLoad(yamlTemplate);
-      this.setState({ userYaml, user: '',operationInProgress : false });
+      this.setState({ userYaml, user: '', operationInProgress : false });
     });
   }
 

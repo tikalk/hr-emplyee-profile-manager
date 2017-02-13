@@ -65,7 +65,7 @@ export default class MetaData extends Component {
     const spinner = <img src={preloaderUrl} alt="Loading..." />;
     const imageUploadInProgress = this.state.imageUploadInProgress;
     const imagePath = image_path || '';
-    const imagePrefix = imagePath.indexOf('//' === 0) ? 'http:' : '';
+    const imagePrefix = (imagePath.indexOf('//') === 0) ? 'http:' : '';
 
     let followMe;
     if (!editing) {
