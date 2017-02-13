@@ -13,6 +13,12 @@ export default class ExperienceYaml extends Component {
     description: PropTypes.string
   };
 
+  static defaultProps = {
+    description: '',
+    years: '',
+    title: ''
+  };
+
   constructor(props) {
     super(props);
     autoBind(this);
@@ -59,7 +65,7 @@ export default class ExperienceYaml extends Component {
               <span className="col s2 col-md-offset-1">Title</span>
               <span className="col s10">
                 {editing
-                  ? <input className="form-control" value={title} onChange={this.updateTitle} />
+                  ? <input className="form-control" value={title || ''} onChange={this.updateTitle} />
                   : <span>{title}</span>
                 }
               </span>

@@ -123,7 +123,7 @@ export default class YamlEditor extends Component {
   render() {
     const { uploader } = this.props;
     const { yamlData, editing } = this.state;
-    const { ex, description } = yamlData || {};
+    const { ex } = yamlData || {};
 
     if (_.isEmpty(yamlData)) {
       return <div />;
@@ -139,58 +139,7 @@ export default class YamlEditor extends Component {
     );
     return (
       <div className="profile">
-{/*
-        <nav className="top-nav">
-          <div className="nav-wrapper">
-            <ul className="right">
-              {
-                !editing && <li>
-                  <a onClick={this.startEditing}><i className="material-icons">edit</i></a>
-                </li>
-              }
-              {
-                editing && <li>
-                  <a onClick={this.cancelEditing}><i className="material-icons">cancel</i></a>
-                </li>
-              }
-              <li><a onClick={this.save}>Publish</a></li>
-              <li><a onClick={this.undo} disabled={!history.length}>Undo</a></li>
-            </ul>
-          </div>
-        </nav>
-*/}
         <div className="profile-details">
-          <div className="row">
-            <div className="col s2">Title</div>
-            <div className="col s10">
-              {editing ?
-                <input
-                  className="form-control"
-                  value={yamlData.title || (yamlData.first_name + " " + yamlData.last_name)}
-                  onChange={this.onProfileDataChange.bind(this, 'title')}
-                />
-                : yamlData.title ? <span>{yamlData.title}</span> :
-                <span>{yamlData.first_name} {yamlData.last_name}</span>
-              }
-            </div>
-
-          </div>
-          <div className="row">
-            <div className="col s2">Description</div>
-            <div className="col s10">
-              {editing ?
-                <textarea
-                  className="materialize-textarea"
-                  onChange={this.onProfileDataChange.bind(this, 'description')}
-                  value={description}
-                />
-                :
-                <span>
-                    {description}
-                  </span>
-              }
-            </div>
-          </div>
           <div>
             <div className="switch">
               <label>

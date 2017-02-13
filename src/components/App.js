@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import cloudinary from 'cloudinary';
 import jsYaml from 'js-yaml';
+import JQuery from 'jquery';
 import autoBind from 'react-autobind';
 import cloneDeep from 'lodash/cloneDeep';
 import GithubLogin from './GithubLogin';
@@ -39,7 +40,7 @@ export default class App extends Component {
   componentDidMount() {
     const { auth } = this.state;
     this.authenticate(auth).then(() => this.loadUsers());
-    $('#preloader').hide();
+    JQuery('#preloader').hide();
   }
 
   setApiTokens(tokens) {
@@ -153,7 +154,6 @@ export default class App extends Component {
   }
 
   render() {
-    $('#preloader').hide();
     const { auth, users, userYaml, user } = this.state;
     const showLoginPage = !auth || !this.uploader;
     const spinner = <img src={preloaderUrl} alt="Loading..." />;

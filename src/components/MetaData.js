@@ -46,8 +46,8 @@ export default class MetaData extends Component {
   handleChange(key, evt) {
     const { onChange } = this.props;
     if (key.indexOf('url:') === 0) {
-      const idx = key.split(':')[1];
-      const urls = this.state.follow_me_urls;
+      const idx = Number(key.split(':')[1]);
+      const urls = this.state.follow_me_urls || [];
       urls[idx] = evt.target.value;
       onChange('follow_me_urls', urls);
     } else {
@@ -58,12 +58,15 @@ export default class MetaData extends Component {
   render() {
     const {
       id, about, login, description, first_name: firstName,
-      last_name: lastName, follow_me_urls: followMeUrls, image_path: imagePath
+      last_name: lastName, follow_me_urls: followMeUrls, image_path
     } = this.props.yamlData;
     const { editing } = this.props;
     const preloaderUrl = require('file!img!../css/pictures/preloader.gif');
     const spinner = <img src={preloaderUrl} alt="Loading..." />;
     const imageUploadInProgress = this.state.imageUploadInProgress;
+    const imagePath = image_path || '';
+    const imagePrefix = imagePath.indexOf('//' === 0) ? 'http:' : '';
+
     let followMe;
     if (!editing) {
       followMe = (followMeUrls || []).map((url, i) => {
@@ -74,12 +77,15 @@ export default class MetaData extends Component {
         );
       });
     } else {
-      followMe = (followMeUrls || []).map((url, i) => {
+      if (followMeUrls && followMeUrls.length === 0) {
+        followMeUrls.push('');
+      }
+      followMe = (followMeUrls || ['']).map((url, i) => {
         return (
           <div key={i}>
             <input
               className="form-control" value={url || ''}
-              onChange={this.handleChange.bind(this, `url: ${i}`)}
+              onChange={this.handleChange.bind(this, `url:${i}`)}
             />
           </div>
         );
@@ -90,19 +96,6 @@ export default class MetaData extends Component {
       <div className="section card-panel">
         <div className="row">
           <div className="col s8 card-panel">
-            <div className="row">
-              <div className="col s2">ID:</div>
-              <div className="col s10">
-                {editing ?
-                  <input
-                    className="form-control" value={id || 0}
-                    onChange={this.handleChange.bind(this, 'id')}
-                  />
-                  :
-                  <span>{id}</span>
-                }
-              </div>
-            </div>
             <div className="row">
               <div className="col s2">First Name:</div>
               <div className="col s10">
@@ -188,7 +181,7 @@ export default class MetaData extends Component {
                 }
                   <div className="photo-wrapper">
                     {
-                      imagePath && !imageUploadInProgress  ?   <img role="presentation" className="photo" src={imagePath} /> : null
+                      imagePath && !imageUploadInProgress  ?   <img role="presentation" className="photo" src={imagePrefix + imagePath} /> : null
                     }
                     {
                       imageUploadInProgress ? <div className='image-preloader'>{spinner}</div> : null

@@ -12,7 +12,6 @@
   "rules": {
     "max-len": [1, 120, 2, {"ignoreComments": true}],
     "comma-dangle": [0, "always-multiline" ],
-    "class-methods-use-this": 1,
     "no-param-reassign": [2, { "props": false }],
     "react/jsx-filename-extension": [1, {
         "extensions": [

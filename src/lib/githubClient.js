@@ -8,9 +8,8 @@ export default class GithubClient {
     this.gh = new GitHub({ token: token.token });
     this.repo = this.gh.getRepo('tikalk', 'tikal_jekyll_website');
     repoFix(this.repo);
-    this.branch = 'master';
-    // this.branch = 'change-image-file';
-    // this.branch = 'profile_editor_test';
+    // this.branch = 'master';
+    this.branch = 'profile-editting-test';
     this.userPath = '_data/users';
     this.picturePath = '_assets/images';
   }

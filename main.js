@@ -1,11 +1,13 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
+let menu;
+let template;
+let win;
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
-let win;
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
@@ -25,6 +27,121 @@ function createWindow() {
     // when you should delete the corresponding element.
     win = null;
   });
+  if (process.platform === 'darwin') {
+    template = [{
+      label: 'Edit',
+      submenu: [{
+        label: 'Undo',
+        accelerator: 'Command+Z',
+        selector: 'undo:'
+      }, {
+        label: 'Redo',
+        accelerator: 'Shift+Command+Z',
+        selector: 'redo:'
+      }, {
+        type: 'separator'
+      }, {
+        label: 'Cut',
+        accelerator: 'Command+X',
+        selector: 'cut:'
+      }, {
+        label: 'Copy',
+        accelerator: 'Command+C',
+        selector: 'copy:'
+      }, {
+        label: 'Paste',
+        accelerator: 'Command+V',
+        selector: 'paste:'
+      }, {
+        label: 'Select All',
+        accelerator: 'Command+A',
+        selector: 'selectAll:'
+      }]
+    }, {
+      label: 'View',
+      submenu: (process.env.NODE_ENV === 'development') ? [{
+        label: 'Reload',
+        accelerator: 'Command+R',
+        click() {
+          win.webContents.reload();
+        }
+      }, {
+        label: 'Toggle Full Screen',
+        accelerator: 'Ctrl+Command+F',
+        click() {
+          win.setFullScreen(!mainWindow.isFullScreen());
+        }
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Alt+Command+I',
+        click() {
+          win.toggleDevTools();
+        }
+      }] : [{
+        label: 'Toggle Full Screen',
+        accelerator: 'Ctrl+Command+F',
+        click() {
+          win.setFullScreen(!mainWindow.isFullScreen());
+        }
+      }, {
+        label: 'Toggle Developer Tools',
+        accelerator: 'Alt+Command+I',
+        click() {
+          win.toggleDevTools();
+        }
+      }]
+    }, {
+      label: 'Window',
+      submenu: [{
+        label: 'Minimize',
+        accelerator: 'Command+M',
+        selector: 'performMiniaturize:'
+      }, {
+        label: 'Close',
+        accelerator: 'Command+W',
+        selector: 'performClose:'
+      }, {
+        type: 'separator'
+      }, {
+        label: 'Bring All to Front',
+        selector: 'arrangeInFront:'
+      }]
+    }];
+
+    menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+  } else {
+    template = [{
+      label: '&View',
+      submenu: (process.env.NODE_ENV === 'development') ? [{
+        label: '&Reload',
+        accelerator: 'Ctrl+R',
+        click() {
+          win.webContents.reload();
+        }
+      }, {
+        label: 'Toggle &Full Screen',
+        accelerator: 'F11',
+        click() {
+          win.setFullScreen(!mainWindow.isFullScreen());
+        }
+      }, {
+        label: 'Toggle &Developer Tools',
+        accelerator: 'Alt+Ctrl+I',
+        click() {
+          win.toggleDevTools();
+        }
+      }] : [{
+        label: 'Toggle &Full Screen',
+        accelerator: 'F11',
+        click() {
+          win.setFullScreen(!mainWindow.isFullScreen());
+        }
+      }]
+    }];
+    menu = Menu.buildFromTemplate(template);
+    mainWindow.setMenu(menu);
+  }
 }
 app.on('ready', createWindow);
 

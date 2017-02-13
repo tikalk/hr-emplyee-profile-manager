@@ -13,12 +13,17 @@
       <img src="css/pictures/gears.gif" />
     </div>
     <div id="app"></div>
+    <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
     <script>
       {
         const script = document.createElement('script');
         const port = process.env.PORT || 8080;
-        script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
+//        script.src = (process.env.HOT) ? `http://localhost:${port}/dist/bundle.js` : '../dist/bundle.js';
+        script.src = `http://localhost:${port}/dist/bundle.js`;
         document.write(script.outerHTML);
       }
     </script>

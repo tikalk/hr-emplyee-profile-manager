@@ -9,7 +9,7 @@
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
     "build-all": "npm run build && electron-packager ./ employee-manager --all --overwrite",
     "build-win": "npm run build && electron-packager ./ employee-manager --paltform=win32 --arch=ia32 --icon=./icon.png --overwrite",
-    "build-mac": "npm run build && electron-packager ./ employee-manager --platform=darwin --arch=x64 --icon=./icon.png.icns --overwrite --prune",
+    "build-mac": "npm run build && electron-packager ./ employee-manager --ignore=.idea/* --ignore=node_modules/* --platform=darwin --arch=x64 --icon=./icon.png.icns --overwrite --prune",
     "build-linux": "npm run build && electron-packager ./ employee-manager --platform=linux --arch=x64 --icon=./icon.png --asar",
     "lint": "./node_modules/.bin/eslint src"
   },
