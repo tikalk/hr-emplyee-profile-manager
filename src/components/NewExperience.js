@@ -63,7 +63,7 @@ export default class NewExperience extends Component {
           </div>
           <div className="col s11">
             <div className="row">
-              <span className="col s2">Years</span>
+              <span className="col s2">Comapny / Years</span>
               <span className="col s10">
                 <input className="form-control" value={years} onChange={this.updateYears} />
               </span>

@@ -52,7 +52,7 @@ export default class ExperienceYaml extends Component {
           }
           <div className={`col ${editing ? 's11' : 's12'}`}>
             <div className="row">
-              <span className="col s2">Years</span>
+              <span className="col s2">Company / Years</span>
               <span className="col s10">
                 {editing ?
                   <input className="form-control" value={years} onChange={this.updateYears} />

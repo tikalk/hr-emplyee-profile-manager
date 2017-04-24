@@ -161,8 +161,17 @@ export default class MetaData extends Component {
               <div className="col s10" style={{ overflow: 'hidden' }}>{followMe}</div>
             </div>
             <div className="row">
-              <div className="col s2">Follow Me:</div>
-              <div className="col s10">{permalink}</div>
+              <div className="col s2">Permalink:</div>
+              <div className="col s10">
+                {editing ?
+                  <input
+                    className="form-control" value={permalink || ''}
+                    onChange={this.handleChange.bind(this, 'permalink')}
+                  />
+                  :
+                  <span>{permalink}</span>
+                }
+              </div>
             </div>
           </div>
           <div className="col s4">

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "main.js",
   "scripts": {
-    "start": "./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron .",
+    "start": "HOT=true ./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron .",
     "watch": "./node_modules/.bin/webpack-dev-server",
     "build": "./node_modules/.bin/webpack",
     "electron-rebuild": "./node_modules/.bin/electron-rebuild",
