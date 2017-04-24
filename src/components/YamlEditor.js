@@ -131,14 +131,15 @@ export default class YamlEditor extends Component {
     const experienceItems = (yamlData.experience || [])
       .filter(e => e.years && e.title)
       .map((exp, i) =>
-      <ExperienceYaml
-        key={i}
-        onChange={this.onValueChange.bind(this, ['experience', i])}
-        onRemove={this.onExperienceRemove.bind(this, i)}
-        editing={editing}
-        {...exp}
-      />
+        <ExperienceYaml
+          key={i}
+          onChange={this.onValueChange.bind(this, ['experience', i])}
+          onRemove={this.onExperienceRemove.bind(this, i)}
+          editing={editing}
+          {...exp}
+        />
     );
+    const skills = yamlData.skills || {};
     return (
       <div className="profile">
         <div className="profile-details">
@@ -171,45 +172,45 @@ export default class YamlEditor extends Component {
           </div>
           <div className="card-panel">
             <h4>Skills</h4>
-            {
-              yamlData.skills && <div className="row">
-                <div className="col s6">
-                  <h5>Developer Skills</h5>
-                  <Skills
-                    skills={yamlData.skills.developer_skills || {}}
-                    onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
-                    onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
-                    editing={editing}
+            <div className="row">
+              <div className="col s6">
+                <h5>Developer Skills</h5>
+                <Skills
+                  skills={skills.developer_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'developer_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'developer_skills')}
+                  editing={editing}
+                />
+                {
+                  editing && <NewSkill
+                    skills={Object.keys(skills.developer_skills || {})}
+                    onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
                   />
-                  {
-                    editing && <NewSkill
-                      skills={Object.keys(yamlData.skills.developer_skills || {})}
-                      onAdd={this.onSkillAdd.bind(this, 'developer_skills')}
-                    />
-                  }
-                </div>
-                <div className="col s6">
-                  <h5>Expert skills</h5>
-                  <Skills
-                    skills={yamlData.skills.expert_skills || {}}
-                    onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
-                    onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
-                    editing={editing}
-                  />
-                  {
-                    editing && <NewSkill
-                      skills={Object.keys(yamlData.skills.expert_skills || {})}
-                      onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
-                    />
-                  }
-                </div>
+                }
               </div>
-            }
+              <div className="col s6">
+                <h5>Expert skills</h5>
+                <Skills
+                  skills={skills.expert_skills || {}}
+                  onChange={this.onValueChange.bind(this, ['skills', 'expert_skills'])}
+                  onSkillRemove={this.onSkillRemove.bind(this, 'expert_skills')}
+                  editing={editing}
+                />
+                {
+                  editing && <NewSkill
+                    skills={Object.keys(skills.expert_skills || {})}
+                    onAdd={this.onSkillAdd.bind(this, 'expert_skills')}
+                  />
+                }
+              </div>
+            </div>
           </div>
         </div>
         { editing ?
-          <div className="fixed-action-btn vertical active"
-               style={{ bottom: '45px', right: '24px' }}>
+          <div
+            className="fixed-action-btn vertical active"
+            style={{ bottom: '45px', right: '24px' }}
+          >
             <a className="btn-floating btn-large teal accent-4" onClick={this.save} title="Publish">
               <i className="large material-icons">cloud_done</i>
             </a>
@@ -221,8 +222,10 @@ export default class YamlEditor extends Component {
             </ul>
           </div>
           :
-          <div className="fixed-action-btn vertical"
-               style={{ bottom: '45px', right: '24px' }}>
+          <div
+            className="fixed-action-btn vertical"
+            style={{ bottom: '45px', right: '24px' }}
+          >
             <a className="btn-floating btn-large red" onClick={this.startEditing} title="Edit">
               <i className="large material-icons">mode_edit</i>
             </a>

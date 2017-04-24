@@ -36,7 +36,7 @@ export default class ProfilesList extends Component {
           </div>
           <ul className="flex">
             {(users || []).filter(u => !!u.user).map(user => (
-              <li key={user.user} className={ user.isEx ? 'ex-employee' : 'active-employee'}>
+              <li key={user.user} className={user.isEx ? 'ex-employee' : 'active-employee'}>
                 <a onClick={loadUser.bind(null, user)}>
                   {this.format(user.display)}
                 </a>

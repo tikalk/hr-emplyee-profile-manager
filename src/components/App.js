@@ -29,7 +29,7 @@ export default class App extends Component {
       auth = undefined;
     }
     const state = {
-      operationInProgress : false
+      operationInProgress: false
     };
     state.auth = auth;
     this.state = state;
@@ -92,18 +92,18 @@ export default class App extends Component {
   }
 
   createUser() {
-    this.setState({operationInProgress : true});
+    this.setState({ operationInProgress: true });
     githubClient.loadTemplate().then((yamlTemplate) => {
       const userYaml = jsYaml.safeLoad(yamlTemplate);
-      this.setState({ userYaml, user: '', operationInProgress : false });
+      this.setState({ userYaml, user: '', operationInProgress: false });
     });
   }
 
   saveUser(oldName, name, yaml) {
-    this.setState({operationInProgress : true});
+    this.setState({ operationInProgress: true });
     return githubClient.saveUserProfile(oldName, name, yaml).then(() => {
       // console.log(`user ${name} saved`);
-      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name, operationInProgress : false });
+      this.setState({ userYaml: jsYaml.safeLoad(yaml), user: name, operationInProgress: false });
       // reload users to update links after commit
       this.loadUsers();
     });
@@ -112,9 +112,9 @@ export default class App extends Component {
   loadUser(userInfo) {
     const { user } = userInfo;
     // console.log('user', user);
-    this.setState({operationInProgress : true});
+    this.setState({ operationInProgress: true });
     return githubClient.loadUserProfile(user).then((userYaml) => {
-      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user,operationInProgress : false });
+      this.setState({ userYaml: jsYaml.safeLoad(userYaml), user, operationInProgress: false });
       return user;
     });
   }
@@ -136,9 +136,7 @@ export default class App extends Component {
         return 0;
       });
       this.setState({ users, originalList: cloneDeep(users) });
-
     });
-
   }
 
   filterProfiles(e) {
@@ -161,7 +159,7 @@ export default class App extends Component {
     return (
       <div className="app">
         {
-           operationInProgress  ?  <div className='preloader'>{spinner}</div> : null
+           operationInProgress ? <div className="preloader">{spinner}</div> : null
         }
 
         {showLoginPage && <GithubLogin setApiTokens={this.setApiTokens} />}

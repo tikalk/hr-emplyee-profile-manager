@@ -32,6 +32,7 @@
     "jsx-a11y/label-has-for": 0,
     "linebreak-style": 0,
     "arrow-body-style": [0, "as-needed"],
-    "no-plusplus": [1, { "allowForLoopAfterthoughts": true }]
+    "no-plusplus": [1, { "allowForLoopAfterthoughts": true }],
+    "new-cap": 0
   }
 }

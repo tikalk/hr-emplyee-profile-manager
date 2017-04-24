@@ -2,9 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import autoBind from 'react-autobind';
 import Dropzone from 'react-dropzone';
 
-let imageUploadInProgress = false;
-
-
 export default class MetaData extends Component {
   static propTypes = {
     yamlData: PropTypes.object,
@@ -17,7 +14,7 @@ export default class MetaData extends Component {
     super(props);
     this.state = {
       imageUploadInProgress: false
-    }
+    };
     autoBind(this);
   }
 
@@ -26,7 +23,7 @@ export default class MetaData extends Component {
     const { path, name } = files[0];
     // upload to cloudinarys
     this.setState({
-        imageUploadInProgress: true
+      imageUploadInProgress: true
     });
     uploader.upload(path,
       (result) => {
@@ -35,7 +32,6 @@ export default class MetaData extends Component {
           imageUploadInProgress: false
         });
         onChange('image_path', result.url);
-
       },
       {
         public_id: `site/pictures/${name}`,
@@ -57,14 +53,13 @@ export default class MetaData extends Component {
 
   render() {
     const {
-      id, about, login, description, first_name: firstName,
-      last_name: lastName, follow_me_urls: followMeUrls, image_path
+      about, login, description, first_name: firstName,
+      last_name: lastName, follow_me_urls: followMeUrls, image_path: imgPath,
+      permalink
     } = this.props.yamlData;
     const { editing } = this.props;
-    const preloaderUrl = require('file!img!../css/pictures/preloader.gif');
-    const spinner = <img src={preloaderUrl} alt="Loading..." />;
     const imageUploadInProgress = this.state.imageUploadInProgress;
-    const imagePath = image_path || '';
+    const imagePath = imgPath || '';
     const imagePrefix = (imagePath.indexOf('//') === 0) ? 'http:' : '';
 
     let followMe;
@@ -165,6 +160,10 @@ export default class MetaData extends Component {
               <div className="col s2">Follow Me:</div>
               <div className="col s10" style={{ overflow: 'hidden' }}>{followMe}</div>
             </div>
+            <div className="row">
+              <div className="col s2">Follow Me:</div>
+              <div className="col s10">{permalink}</div>
+            </div>
           </div>
           <div className="col s4">
             <div className="row">
@@ -172,23 +171,29 @@ export default class MetaData extends Component {
                 <h5>Profile picture</h5>
                 {editing ?
                   <div>
-                    <div style={{cursor:'hand'}}>
+                    <div style={{ cursor: 'hand' }}>
                       <Dropzone className="drop-zone card-panel" onDrop={this.onDrop}>
                         <div>Drop or click here to choose a picture</div>
                       </Dropzone>
                     </div>
                   </div> : null
                 }
-                  <div className="photo-wrapper">
-                    {
-                      imagePath && !imageUploadInProgress  ?   <img role="presentation" className="photo" src={imagePrefix + imagePath} /> : null
-                    }
-                    {
-                      imageUploadInProgress ? <div className='image-preloader'>{spinner}</div> : null
-                    }
-
-                  </div>
-
+                <div className="photo-wrapper">
+                  {
+                    imagePath && !imageUploadInProgress ?
+                      <img role="presentation" className="photo" src={imagePrefix + imagePath} />
+                      :
+                      null
+                  }
+                  {
+                    imageUploadInProgress ?
+                      <div className="image-preloader">
+                        <img src="../css/pictures/preloader.gif" alt="Loading..." />
+                      </div>
+                      :
+                      null
+                  }
+                </div>
               </div>
             </div>
           </div>
