@@ -81,6 +81,18 @@ export default class YamlEditor extends Component {
     const { user, saveUser } = this.props;
     const { yamlData } = this.state;
     if (!yamlData || !yamlData.login) return;
+    const yamlToSave = _.clone(yamlData);
+    if (yamlToSave.skills &&
+        (!yamlToSave.skills.expert_skills || yamlToSave.skills.expert_skills.length === 0)) {
+      delete yamlToSave.skills.expert_skills;
+    }
+    if (yamlToSave.skills &&
+        (!yamlToSave.skills.developer_skills || yamlToSave.skills.developer_skills.length === 0)) {
+      delete yamlToSave.skills.developer_skills;
+    }
+    if (yamlToSave.skills && !yamlToSave.skills.developer_skills && !yamlToSave.skills.developer_skills) {
+      delete yamlToSave.skills;
+    }
     const yamlText = jsYaml.safeDump(yamlData);
     saveUser(user, yamlData.login + (yamlData.ex ? '.ex' : ''), yamlText);
   }
