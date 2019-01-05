@@ -42,7 +42,7 @@
     "webpack-dev-server": "3.1.11"
   },
   "dependencies": {
-    "bootstrap": "3.3.7",
+    "bootstrap": "3.4.0",
     "classnames": "2.2.5",
     "cloudinary": "1.4.3",
     "github-api": "2.3.0",
